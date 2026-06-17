@@ -1,8 +1,8 @@
 # Program Notes
 
-DBYTEPAD is a small program on purpose.
+DBYTEPAD is small on purpose.
 
-The operating system already has windows, menus, dialogs, text controls, file handles, and messages. DBYTEPAD uses them directly instead of building a second fake operating system inside the first one.
+Windows already has windows, menus, dialogs, text controls, file handles, and messages. DBYTEPAD uses them directly.
 
 ## Shape
 
@@ -18,23 +18,35 @@ One dirty flag.
 
 One read-only flag.
 
-No hidden network behavior.
-
-No background service.
-
-No telemetry.
+One ini file beside the executable.
 
 ## File law
 
 The file belongs to the user.
 
-Opening a file replaces the buffer only after unsaved changes are handled.
+Opening a file checks unsaved work first.
 
 Saving writes only when the user asks for a save.
 
 Read-only mode blocks editing and saving.
 
-Facts report what DBYTEPAD knows instead of pretending to know more.
+Reload reads from disk again.
+
+Facts report what DBYTEPAD knows.
+
+## Memory law
+
+DBYTEPAD may remember simple local state.
+
+Window size is state.
+
+Font is state.
+
+Word wrap is state.
+
+Recent files are state.
+
+That state lives in `dbytepad.ini` beside the executable.
 
 ## Size law
 
@@ -52,4 +64,4 @@ A clever trick is bad if it makes file behavior harder to reason about.
 
 Experimental work belongs on another branch.
 
-Version 1.0.2 is the current stable release.
+Version 1.1.0 is the current stable release.
