@@ -48,7 +48,7 @@ The `dbyte-mode` branch adds first-pass DByte integration:
 - `Tools > Run DByte` calls `dbyte run <file>`
 - `Tools > DByte Version` calls `dbyte --version`
 
-This branch is test work. It still uses the external `dbyte` tool.
+DByte mode is optional. Without the DByte command-line tool, DBYTEPAD still opens and edits DByte source files. Run DByte and DByte Version need the DByte tool in PATH.
 
 ## Docs
 
