@@ -4,6 +4,7 @@
 #include <richedit.h>
 #include <shellapi.h>
 #include <strsafe.h>
+#include "resource.h"
 
 #define APP_NAME L"DBYTEPAD"
 #define APP_VERSION L"1.0.0"
@@ -807,7 +808,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE prev, PWSTR cmd, int show) {
     wc.lpfnWndProc = window_proc;
     wc.hInstance = instance;
     wc.hCursor = LoadCursorW(NULL, IDC_IBEAM);
-    wc.hIcon = LoadIconW(NULL, IDI_APPLICATION);
+    wc.hIcon = LoadIconW(instance, MAKEINTRESOURCEW(IDI_APP_ICON));
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
     wc.lpszClassName = MAIN_CLASS;
 
@@ -854,6 +855,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE prev, PWSTR cmd, int show) {
     if (accel) DestroyAcceleratorTable(accel);
     return (int)msg.wParam;
 }
+
 
 
 

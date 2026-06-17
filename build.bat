@@ -21,9 +21,13 @@ exit /b 1
 :build
 if not exist build mkdir build
 
-cl /nologo /W4 /WX /wd4201 /O1 /DUNICODE /D_UNICODE src\dbytepad.c ^
+rc /nologo /fo build\dbytepad.res src\dbytepad.rc
+if errorlevel 1 exit /b 1
+
+cl /nologo /W4 /WX /wd4201 /O1 /DUNICODE /D_UNICODE src\dbytepad.c build\dbytepad.res ^
   /link /SUBSYSTEM:WINDOWS /OUT:build\dbytepad.exe user32.lib gdi32.lib comdlg32.lib shell32.lib comctl32.lib
 
 if errorlevel 1 exit /b 1
 
 echo Built build\dbytepad.exe
+
