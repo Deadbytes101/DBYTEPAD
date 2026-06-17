@@ -20,6 +20,8 @@ One read-only flag.
 
 One ini file beside the executable.
 
+One optional DByte bridge.
+
 ## File law
 
 The file belongs to the user.
@@ -33,6 +35,16 @@ Read-only mode blocks editing and saving.
 Reload reads from disk again.
 
 Facts report what DBYTEPAD knows.
+
+## DByte law
+
+DByte support must be optional.
+
+DBYTEPAD can edit DByte source without the DByte tool installed.
+
+Run commands may use the DByte tool when it exists in PATH.
+
+The editor must not become dependent on a compiler just to open a text file.
 
 ## Memory law
 
@@ -64,4 +76,4 @@ A clever trick is bad if it makes file behavior harder to reason about.
 
 Experimental work belongs on another branch.
 
-Version 1.1.0 is the current stable release.
+Version 1.2.0 is the current stable release.
