@@ -15,7 +15,7 @@ A program should fit in the head.
 
 ## Screenshot
 
-![DBYTEPAD running on Windows](assets/dbytepad-screen.svg)
+![DBYTEPAD running on Windows](assets/dbytepad-screen.png)
 
 ## Version
 
