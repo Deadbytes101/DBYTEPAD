@@ -13,6 +13,10 @@ DBYTEPAD is a file-truth editor. It opens text, tracks state, reports facts, sup
 
 A program should fit in the head.
 
+## Screenshot
+
+![DBYTEPAD running on Windows](assets/dbytepad-screen.svg)
+
 ## Version
 
 Current stable release: v1.0.2
