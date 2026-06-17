@@ -14,7 +14,7 @@ Each release entry records the local build facts that matter:
 Run after building:
 
 ```powershell
-.\scripts\size.ps1 -Record v1.0.2
+.\scripts\size.ps1 -Record v1.1.0
 ```
 
 ## Entries
@@ -50,3 +50,11 @@ v1.0.2
 - Source lines: 864
 - Source bytes: 25190
 - Note: compact icon resource
+
+v1.1.0
+
+- Measured commit: 19e00a6
+- Executable bytes: 180224
+- Source lines: 1143
+- Source bytes: 34383
+- Note: recent files, ini state, font setting, replace
