@@ -10,6 +10,7 @@
 #define MAIN_CLASS L"DBYTEPAD_WINDOW"
 #define MAX_PATH_CHARS 32768
 #define STATUS_H 22
+#define FIND_TEXT_CHARS 256
 
 #define IDM_FILE_NEW 1001
 #define IDM_FILE_OPEN 1002
@@ -22,12 +23,18 @@
 #define IDM_EDIT_COPY 2003
 #define IDM_EDIT_PASTE 2004
 #define IDM_EDIT_SELECT_ALL 2005
+#define IDM_EDIT_FIND 2006
+#define IDM_EDIT_FIND_NEXT 2007
 #define IDM_VIEW_WORD_WRAP 3001
 
 static HINSTANCE g_instance;
 static HWND g_main;
 static HWND g_edit;
 static HWND g_status;
+static HWND g_find_dialog;
+static UINT g_find_msg;
+static FINDREPLACEW g_find;
+static WCHAR g_find_text[FIND_TEXT_CHARS];
 static WCHAR g_path[MAX_PATH_CHARS];
 static int g_dirty;
 static int g_loading;
@@ -447,6 +454,53 @@ static int ask_save_if_dirty(HWND hwnd) {
     return 1;
 }
 
+static void find_next(HWND hwnd) {
+    CHARRANGE sel;
+    (void)hwnd;
+    FINDTEXTEXW ft;
+    DWORD flags;
+
+    if (!g_find_text[0]) {
+        MessageBeep(MB_ICONINFORMATION);
+        return;
+    }
+
+    SendMessageW(g_edit, EM_EXGETSEL, 0, (LPARAM)&sel);
+
+    ft.chrg.cpMin = sel.cpMax;
+    ft.chrg.cpMax = -1;
+    ft.lpstrText = g_find_text;
+
+    flags = FR_DOWN;
+    if (g_find.Flags & FR_MATCHCASE) flags |= FR_MATCHCASE;
+    if (g_find.Flags & FR_WHOLEWORD) flags |= FR_WHOLEWORD;
+
+    if (SendMessageW(g_edit, EM_FINDTEXTEXW, (WPARAM)flags, (LPARAM)&ft) >= 0) {
+        SendMessageW(g_edit, EM_EXSETSEL, 0, (LPARAM)&ft.chrgText);
+        SetFocus(g_edit);
+        update_status();
+        return;
+    }
+
+    MessageBeep(MB_ICONINFORMATION);
+}
+
+static void show_find(HWND hwnd) {
+    if (g_find_dialog) {
+        SetForegroundWindow(g_find_dialog);
+        return;
+    }
+
+    ZeroMemory(&g_find, sizeof(g_find));
+    g_find.lStructSize = sizeof(g_find);
+    g_find.hwndOwner = hwnd;
+    g_find.lpstrFindWhat = g_find_text;
+    g_find.wFindWhatLen = FIND_TEXT_CHARS;
+    g_find.Flags = FR_DOWN;
+
+    g_find_dialog = FindTextW(&g_find);
+}
+
 static HMENU make_menu(void) {
     HMENU menu = CreateMenu();
     HMENU file = CreatePopupMenu();
@@ -466,6 +520,9 @@ static HMENU make_menu(void) {
     AppendMenuW(edit, MF_STRING, IDM_EDIT_CUT, L"Cut\tCtrl+X");
     AppendMenuW(edit, MF_STRING, IDM_EDIT_COPY, L"Copy\tCtrl+C");
     AppendMenuW(edit, MF_STRING, IDM_EDIT_PASTE, L"Paste\tCtrl+V");
+    AppendMenuW(edit, MF_SEPARATOR, 0, NULL);
+    AppendMenuW(edit, MF_STRING, IDM_EDIT_FIND, L"Find...\tCtrl+F");
+    AppendMenuW(edit, MF_STRING, IDM_EDIT_FIND_NEXT, L"Find Next\tF3");
     AppendMenuW(edit, MF_SEPARATOR, 0, NULL);
     AppendMenuW(edit, MF_STRING, IDM_EDIT_SELECT_ALL, L"Select All\tCtrl+A");
 
@@ -489,6 +546,8 @@ static void run_command(HWND hwnd, WORD id) {
     case IDM_EDIT_CUT: SendMessageW(g_edit, WM_CUT, 0, 0); break;
     case IDM_EDIT_COPY: SendMessageW(g_edit, WM_COPY, 0, 0); break;
     case IDM_EDIT_PASTE: SendMessageW(g_edit, WM_PASTE, 0, 0); break;
+    case IDM_EDIT_FIND: show_find(hwnd); break;
+    case IDM_EDIT_FIND_NEXT: find_next(hwnd); break;
     case IDM_EDIT_SELECT_ALL: SendMessageW(g_edit, EM_SETSEL, 0, -1); break;
     case IDM_VIEW_WORD_WRAP:
         g_word_wrap = !g_word_wrap;
@@ -512,6 +571,19 @@ static void open_command_line_file(HWND hwnd) {
 }
 
 static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+    if (msg == g_find_msg) {
+        FINDREPLACEW *fr = (FINDREPLACEW *)lparam;
+        if (fr->Flags & FR_DIALOGTERM) {
+            g_find_dialog = NULL;
+            return 0;
+        }
+        if (fr->Flags & FR_FINDNEXT) {
+            g_find.Flags = fr->Flags;
+            find_next(hwnd);
+        }
+        return 0;
+    }
+
     switch (msg) {
     case WM_CREATE:
         g_loading = 1;
@@ -603,6 +675,8 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE prev, PWSTR cmd, int show) {
         { FVIRTKEY | FCONTROL, 'S', IDM_FILE_SAVE },
         { FVIRTKEY | FCONTROL | FSHIFT, 'S', IDM_FILE_SAVE_AS },
         { FVIRTKEY | FCONTROL, 'A', IDM_EDIT_SELECT_ALL },
+        { FVIRTKEY | FCONTROL, 'F', IDM_EDIT_FIND },
+        { FVIRTKEY, VK_F3, IDM_EDIT_FIND_NEXT },
         { FVIRTKEY | FCONTROL, 'Z', IDM_EDIT_UNDO },
         { FVIRTKEY | FCONTROL, 'X', IDM_EDIT_CUT },
         { FVIRTKEY | FCONTROL, 'C', IDM_EDIT_COPY },
@@ -613,6 +687,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE prev, PWSTR cmd, int show) {
     (void)cmd;
 
     g_instance = instance;
+    g_find_msg = RegisterWindowMessageW(L"commdlg_FindReplace");
 
     if (!LoadLibraryW(L"Msftedit.dll")) {
         MessageBoxW(NULL, L"Could not load Msftedit.dll.", APP_NAME, MB_OK | MB_ICONERROR);
@@ -659,13 +734,17 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE prev, PWSTR cmd, int show) {
     open_command_line_file(hwnd);
 
     while (GetMessageW(&msg, NULL, 0, 0) > 0) {
-        if (!accel || !TranslateAcceleratorW(hwnd, accel, &msg)) {
-            TranslateMessage(&msg);
-            DispatchMessageW(&msg);
+        if (!g_find_dialog || !IsDialogMessageW(g_find_dialog, &msg)) {
+            if (!accel || !TranslateAcceleratorW(hwnd, accel, &msg)) {
+                TranslateMessage(&msg);
+                DispatchMessageW(&msg);
+            }
         }
     }
 
     if (accel) DestroyAcceleratorTable(accel);
     return (int)msg.wParam;
 }
+
+
 
