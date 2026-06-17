@@ -41,3 +41,10 @@ Executable bytes: 512000
 Source lines: 864
 Source bytes: 25190
 Note: local measured build
+
+v1.0.2
+Commit: d24ccba
+Executable bytes: 174080
+Source lines: 864
+Source bytes: 25190
+Note: local measured build
