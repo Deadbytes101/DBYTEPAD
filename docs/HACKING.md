@@ -68,6 +68,18 @@ Saving must be user-visible and explicit.
 
 Facts must report what the program actually knows.
 
+## DByte behavior
+
+DByte support is optional.
+
+Opening and editing DByte source must not require the DByte tool.
+
+Run DByte and DByte Version may call the external DByte tool.
+
+If the tool is missing, show a clear message and leave the editor usable.
+
+Do not embed the compiler until the external bridge proves itself.
+
 ## Size rule
 
 Build first.
@@ -94,7 +106,7 @@ Do not make the program smaller by making the code stupid.
 
 Release builds must update `APP_VERSION` in `src\dbytepad.c`.
 
-Tags should point at the same commit as `main` for that release.
+Release tags should point at the measured release commit.
 
 Check:
 
@@ -102,7 +114,7 @@ Check:
 git diff vX.Y.Z main
 ```
 
-No diff means the tag and main agree.
+A docs-only diff after release is allowed. A source diff means the release is not clean.
 
 ## Good changes
 
@@ -114,6 +126,7 @@ Examples:
 - better status facts
 - better read-only behavior
 - better search behavior
+- better DByte source handling
 - smaller binary with the same behavior
 
 ## Bad changes
