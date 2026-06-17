@@ -20,6 +20,12 @@ Open a file from the command line:
 build\dbytepad.exe README.md
 ```
 
+Open a DByte file:
+
+```bat
+build\dbytepad.exe examples\demo.dby
+```
+
 ## File menu
 
 New clears the buffer after asking about unsaved work.
@@ -36,7 +42,7 @@ Save As writes the buffer to a path you choose.
 
 Reload reads the current file from disk again. Unsaved work is checked first.
 
-Facts shows what DBYTEPAD knows: path, bytes, line count, char count, state.
+Facts shows what DBYTEPAD knows: path, bytes, line count, char count, state, and DByte facts when the file is DByte source.
 
 Exit closes the program after checking unsaved work.
 
@@ -57,6 +63,16 @@ Word Wrap changes horizontal wrapping.
 Read Only toggles edit blocking for the current buffer.
 
 Font opens the Windows font dialog.
+
+## Tools menu
+
+Run DByte runs the current saved DByte file with the external DByte tool.
+
+DByte Facts shows DByte source status, DByte tool status, lines, chars, UTF-8 bytes, and approximate tokens.
+
+DByte Version checks the installed DByte tool.
+
+The DByte tool is optional. DBYTEPAD still opens, edits, saves, and counts DByte source files without it.
 
 ## Settings
 
