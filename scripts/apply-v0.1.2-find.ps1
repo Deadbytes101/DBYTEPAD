@@ -71,6 +71,8 @@ static void find_next(HWND hwnd) {
     FINDTEXTEXW ft;
     DWORD flags;
 
+    (void)hwnd;
+
     if (!g_find_text[0]) {
         MessageBeep(MB_ICONINFORMATION);
         return;
