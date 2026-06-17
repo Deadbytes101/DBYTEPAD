@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="240" viewBox="0 0 960 240" role="img" aria-labelledby="title desc">
+  <title id="title">DBYTEPAD logo</title>
+  <desc id="desc">A plain block logo for the native DBYTEPAD text editor.</desc>
+  <rect x="16" y="16" width="928" height="208" rx="0" fill="#111111"/>
+  <rect x="24" y="24" width="912" height="192" rx="0" fill="#f2f0e8"/>
+  <rect x="48" y="48" width="144" height="144" fill="#111111"/>
+  <rect x="72" y="72" width="56" height="96" fill="#f2f0e8"/>
+  <rect x="128" y="96" width="24" height="48" fill="#f2f0e8"/>
+  <rect x="216" y="62" width="24" height="116" fill="#111111"/>
+  <rect x="240" y="86" width="24" height="24" fill="#111111"/>
+  <rect x="264" y="110" width="24" height="24" fill="#111111"/>
+  <rect x="240" y="134" width="24" height="24" fill="#111111"/>
+  <text x="320" y="134" fill="#111111" font-family="Consolas, Cascadia Mono, monospace" font-size="64" font-weight="700" letter-spacing="4">DBYTEPAD</text>
+  <text x="324" y="172" fill="#111111" font-family="Consolas, Cascadia Mono, monospace" font-size="22" letter-spacing="2">WIN32 TEXT. FILE TRUTH. MEASURED BYTES.</text>
+</svg>
