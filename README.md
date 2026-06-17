@@ -1,57 +1,22 @@
-![DBYTEPAD](assets/dbytepad-logo.svg)
-
 # DBYTEPAD
 
-A small native Windows text editor built directly on Win32.
+Small Win32 text editor written in C.
 
-No Electron.
-No webview.
-No runtime bundle.
-No telemetry.
+No Electron. No webview. No telemetry.
 
-DBYTEPAD is a file-truth editor. It opens text, tracks state, reports facts, supports read-only inspection, and measures its own build size.
-
-A program should fit in the head.
-
-## Screenshot
-
-![DBYTEPAD running on Windows](assets/dbytepad-screen.png)
-
-## Version
-
-Current stable release: v1.0.2
-
-## What it does
-
-- Opens and saves text files.
-- Opens files from the command line.
-- Opens files in read-only mode for inspection.
-- Tracks dirty state in the title and status line.
-- Shows line, column, character count, and UTF-8 byte count.
-- Shows file facts: path, disk size, modified time, lines, chars, buffer bytes, and state.
-- Provides native Find and Find Next.
-- Supports Word Wrap.
-- Supports drag and drop file open.
-- Builds as a single Windows executable.
-- Carries its own measured icon resource.
-
-## What it refuses
-
-- No browser hidden inside the program.
-- No framework pretending to be the operating system.
-- No telemetry.
-- No plugin theater before the editor is solid.
-- No fake cyber skin.
+![DBYTEPAD screenshot](assets/dbytepad-screen.png)
 
 ## Build
-
-Open a Developer Command Prompt for Visual Studio, then run:
 
 ```bat
 build.bat
 ```
 
-The executable is produced in the build directory as `dbytepad.exe`.
+Output:
+
+```text
+build\dbytepad.exe
+```
 
 ## Run
 
@@ -59,64 +24,29 @@ The executable is produced in the build directory as `dbytepad.exe`.
 build\dbytepad.exe README.md
 ```
 
-## Release facts
+## Features
 
-v1.0.2 local measured build:
+- Open and save text files.
+- Open files from the command line.
+- Open files in read-only mode.
+- Find and Find Next.
+- Word Wrap.
+- Drag and drop file open.
+- File Facts.
+- Line, column, char count, and UTF-8 byte count.
 
-- Executable bytes: 174080
-- Source lines: 864
-- Source bytes: 25190
+## Release
 
-See `docs/BYTE_LEDGER.md` for the measured ledger.
+Current release: v1.0.2
 
-## Design rules
+Measured build:
 
-- Use Win32 directly.
-- Let RichEdit own text mechanics.
-- Let DBYTEPAD own file behavior.
-- Keep file writes explicit.
-- Keep source understandable.
-- Measure size instead of guessing.
-- Preserve stable behavior before shrinking the binary.
+- exe: 174080 bytes
+- source: 864 lines
+- source: 25190 bytes
 
-## Stable feature set
-
-File:
-
-- New
-- Open
-- Open Read Only
-- Save
-- Save As
-- Reload
-- Facts
-- Exit
-
-Edit:
-
-- Undo
-- Cut
-- Copy
-- Paste
-- Find
-- Find Next
-- Select All
-
-View:
-
-- Word Wrap
-- Read Only
-
-## Branches
-
-`main` is the stable release line.
-
-Experimental size work belongs on `tiny-build`.
+See `docs/BYTE_LEDGER.md`.
 
 ## License
 
-MIT License. See `LICENSE`.
-
-## Status
-
-DBYTEPAD v1.0.2 is tagged and stable. Future work should be bug fixes, release tooling, or isolated tiny-build experiments.
+MIT. See `LICENSE`.
