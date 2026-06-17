@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="assets/dbytepad-logo.svg" alt="DBYTEPAD" width="720">
-</p>
+![DBYTEPAD](assets/dbytepad-logo.svg)
 
 # DBYTEPAD
 
@@ -11,13 +9,13 @@ No webview.
 No runtime bundle.
 No telemetry.
 
-DBYTEPAD is not trying to become a platform. It is a window, a text buffer, file I/O, and a few tools that earn their place.
+DBYTEPAD is a file-truth editor. It opens text, tracks state, reports facts, supports read-only inspection, and measures its own build size.
 
 A program should fit in the head.
 
 ## Version
 
-Current stable release: v1.0.0
+Current stable release: v1.0.2
 
 ## What it does
 
@@ -31,6 +29,7 @@ Current stable release: v1.0.0
 - Supports Word Wrap.
 - Supports drag and drop file open.
 - Builds as a single Windows executable.
+- Carries its own measured icon resource.
 
 ## What it refuses
 
@@ -58,11 +57,11 @@ build\dbytepad.exe README.md
 
 ## Release facts
 
-v1.0.0 local measured build:
+v1.0.2 local measured build:
 
-- Executable bytes: 140800
-- Source lines: 862
-- Source bytes: 25146
+- Executable bytes: 174080
+- Source lines: 864
+- Source bytes: 25190
 
 See `docs/BYTE_LEDGER.md` for the measured ledger.
 
@@ -112,4 +111,4 @@ Experimental size work belongs on `tiny-build`.
 
 ## Status
 
-DBYTEPAD v1.0.0 is tagged and stable. Future work should be bug fixes, release tooling, or isolated tiny-build experiments.
+DBYTEPAD v1.0.2 is tagged and stable. Future work should be bug fixes, release tooling, or isolated tiny-build experiments.
