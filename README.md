@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/dbytepad-logo.svg" alt="DBYTEPAD" width="720">
+</p>
+
 # DBYTEPAD
 
 A small native Windows text editor built directly on Win32.
