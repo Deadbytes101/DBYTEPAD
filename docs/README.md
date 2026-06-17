@@ -11,16 +11,19 @@ DBYTEPAD is a small Win32 editor. It should be easy to build, easy to read, and 
 - `PROGRAM_NOTES.md` - what the program is allowed to be.
 - `HACKING.md` - how to change the code without turning it into junk.
 - `BYTE_LEDGER.md` - measured size history.
-- `RELEASE_NOTES_v1.2.0.md` - current release notes.
-- `RELEASE_NOTES_v1.1.0.md` - previous release notes.
+- `RELEASE_NOTES_v1.2.1.md` - current release notes.
+- `RELEASE_NOTES_v1.2.0.md` - previous DByte mode release notes.
+- `RELEASE_NOTES_v1.1.0.md` - older release notes.
 
 ## Current line
 
-Current stable release: v1.2.0.
+Current stable release: v1.2.1.
 
 DBYTEPAD is still a text editor first.
 
 DByte mode is a bridge. It does not turn DBYTEPAD into a heavy IDE.
+
+Version metadata belongs in the executable. Users should not see a blank Properties page.
 
 ## Rules
 
