@@ -38,6 +38,18 @@ build\dbytepad.exe README.md
 - Line, column, char count, and UTF-8 byte count.
 - Remembers window size, font, word wrap, and recent files in `dbytepad.ini`.
 
+## DByte mode
+
+The `dbyte-mode` branch adds first-pass DByte integration:
+
+- opens `.dby`, `.dbyte`, `.dbyterc`, and `Dbyte.toml`
+- marks DByte files in the title and status bar
+- counts approximate DByte tokens in Facts
+- `Tools > Run DByte` calls `dbyte run <file>`
+- `Tools > DByte Version` calls `dbyte --version`
+
+DByte mode is optional. Without the DByte command-line tool, DBYTEPAD still opens and edits DByte source files. Run DByte and DByte Version need the DByte tool in PATH.
+
 ## Docs
 
 Start with [docs](docs/README.md).

@@ -7,6 +7,7 @@ DBYTEPAD is a small Win32 editor. It should be easy to build, easy to read, and 
 ## Read this first
 
 - `USER_MANUAL.md` - how to use the editor.
+- `DBYTE_MODE.md` - how the DByte bridge works.
 - `PROGRAM_NOTES.md` - what the program is allowed to be.
 - `HACKING.md` - how to change the code without turning it into junk.
 - `BYTE_LEDGER.md` - measured size history.
@@ -19,10 +20,6 @@ The file belongs to the user.
 A save must be explicit.
 
 Read-only must mean read-only.
-
-The program should not talk to the network.
-
-The program should not hide work in the background.
 
 Measure bytes. Do not guess.
 
