@@ -808,6 +808,24 @@ static int ask_save_if_dirty(HWND hwnd) {
     return 1;
 }
 
+static int dbyte_tool_available(HWND hwnd, int quiet) {
+    WCHAR found[MAX_PATH_CHARS];
+    DWORD n;
+
+    n = SearchPathW(NULL, L"dbyte.exe", NULL, MAX_PATH_CHARS, found, NULL);
+    if (n > 0 && n < MAX_PATH_CHARS) return 1;
+
+    if (!quiet) {
+        MessageBoxW(
+            hwnd,
+            L"DByte was not found.\n\nDBYTEPAD can still edit this file.\nTo run it, install DByte and make sure dbyte.exe is in PATH.",
+            APP_NAME,
+            MB_OK | MB_ICONINFORMATION);
+    }
+
+    return 0;
+}
+
 static int ensure_disk_file_for_dbyte(HWND hwnd) {
     int answer;
 
@@ -873,6 +891,7 @@ static void run_dbyte_file(HWND hwnd) {
     WCHAR cwd[MAX_PATH_CHARS];
     int answer;
 
+    if (!dbyte_tool_available(hwnd, 0)) return;
     if (!ensure_disk_file_for_dbyte(hwnd)) return;
 
     if (!is_dbyte_source_path(g_path)) {
@@ -887,21 +906,26 @@ static void run_dbyte_file(HWND hwnd) {
 
 static void show_dbyte_version(HWND hwnd) {
     WCHAR cmd[64];
+
+    if (!dbyte_tool_available(hwnd, 0)) return;
+
     StringCchCopyW(cmd, 64, L"dbyte --version");
     run_external_command(hwnd, cmd, NULL, L"dbyte --version");
 }
 
 static void show_dbyte_facts(HWND hwnd) {
-    WCHAR text[768];
+    WCHAR text[900];
     int tokens = dbyte_token_count();
     int bytes = utf8_byte_count();
     int lines = (int)SendMessageW(g_edit, EM_GETLINECOUNT, 0, 0);
+    int has_dbyte = dbyte_tool_available(hwnd, 1);
 
     StringCchPrintfW(
         text,
-        768,
-        L"DByte source: %ls\nPath: %ls\nLines: %d\nChars: %lld\nUTF-8 bytes: %d\nApprox tokens: %d\nRun command: dbyte run <file>",
+        900,
+        L"DByte source: %ls\nDByte tool: %ls\nPath: %ls\nLines: %d\nChars: %lld\nUTF-8 bytes: %d\nApprox tokens: %d\nRun command: dbyte run <file>",
         is_dbyte_source_path(g_path) ? L"yes" : L"no",
+        has_dbyte ? L"found in PATH" : L"not found in PATH",
         g_path[0] ? g_path : L"Untitled buffer",
         lines,
         (long long)text_chars(),
@@ -1105,7 +1129,7 @@ static void replace_all(HWND hwnd) {
 }
 
 static void show_about(HWND hwnd) {
-    MessageBoxW(hwnd, L"DBYTEPAD " APP_VERSION L"\nNative Win32 text editor.\nDByte mode calls the external dbyte tool.\nNo Electron. No webview. No telemetry.", L"About DBYTEPAD", MB_OK | MB_ICONINFORMATION);
+    MessageBoxW(hwnd, L"DBYTEPAD " APP_VERSION L"\nNative Win32 text editor.\nDByte mode is optional and uses external dbyte.exe.\nNo Electron. No webview. No telemetry.", L"About DBYTEPAD", MB_OK | MB_ICONINFORMATION);
 }
 
 static HMENU make_menu(void) {
