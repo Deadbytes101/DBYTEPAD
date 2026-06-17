@@ -38,6 +38,10 @@ build\dbytepad.exe README.md
 - Line, column, char count, and UTF-8 byte count.
 - Remembers window size, font, word wrap, and recent files in `dbytepad.ini`.
 
+## Docs
+
+Start with [docs](docs/README.md).
+
 ## Release
 
 Current release: v1.1.0
