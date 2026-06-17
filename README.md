@@ -1,4 +1,5 @@
 # DBYTEPAD
+![DBYTEPAD LOGO](assets/dbytepad-logo.svg)
 
 Small Win32 text editor written in C.
 
