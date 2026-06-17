@@ -46,8 +46,8 @@ Measured build:
 - source: 864 lines
 - source: 25190 bytes
 
-See `docs/BYTE_LEDGER.md`.
+See [BYTE_LEDGER](docs/BYTE_LEDGER.md)
 
 ## License
 
-MIT. See `LICENSE`.
+MIT. See [LICENSE](LICENSE).
