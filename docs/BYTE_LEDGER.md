@@ -23,3 +23,10 @@ Run:
 Entries:
 
 No entries yet.
+
+v0.1.4
+Commit: 357ce6d
+Executable bytes: 140800
+Source lines: 844
+Source bytes: 24621
+Note: local measured build
