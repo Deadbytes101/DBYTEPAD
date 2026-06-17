@@ -7,7 +7,7 @@
 #include "resource.h"
 
 #define APP_NAME L"DBYTEPAD"
-#define APP_VERSION L"1.1.0"
+#define APP_VERSION L"1.2-dev"
 #define EDIT_CLASS MSFTEDIT_CLASS
 #define MAIN_CLASS L"DBYTEPAD_WINDOW"
 #define MAX_PATH_CHARS 32768
@@ -40,6 +40,10 @@
 
 #define IDM_HELP_ABOUT 4001
 
+#define IDM_TOOLS_DBYTE_RUN 5001
+#define IDM_TOOLS_DBYTE_FACTS 5002
+#define IDM_TOOLS_DBYTE_VERSION 5003
+
 static HINSTANCE g_instance;
 static HWND g_main;
 static HWND g_edit;
@@ -71,6 +75,7 @@ static int save_file_as(HWND hwnd);
 static int open_path(HWND hwnd, const WCHAR *path);
 static void set_read_only(int read_only);
 static void refresh_recent_menu(void);
+static int is_dbyte_source_path(const WCHAR *path);
 
 static const WCHAR *base_name(const WCHAR *path) {
     const WCHAR *name = path;
@@ -82,6 +87,31 @@ static const WCHAR *base_name(const WCHAR *path) {
     }
 
     return name;
+}
+
+static void copy_dir_name(const WCHAR *path, WCHAR *dir, size_t dir_count) {
+    const WCHAR *p;
+    const WCHAR *last = NULL;
+    size_t n;
+
+    if (!path || !path[0]) {
+        StringCchCopyW(dir, dir_count, L".");
+        return;
+    }
+
+    for (p = path; *p; p++) {
+        if (*p == L'\\' || *p == L'/') last = p;
+    }
+
+    if (!last) {
+        StringCchCopyW(dir, dir_count, L".");
+        return;
+    }
+
+    n = (size_t)(last - path);
+    if (n + 1 >= dir_count) n = dir_count - 2;
+    CopyMemory(dir, path, n * sizeof(WCHAR));
+    dir[n] = 0;
 }
 
 static void show_last_error(HWND hwnd, const WCHAR *what) {
@@ -165,9 +195,9 @@ static void save_config(void) {
 }
 
 static void set_title(void) {
-    WCHAR title[MAX_PATH_CHARS + 64];
+    WCHAR title[MAX_PATH_CHARS + 80];
     const WCHAR *name = g_path[0] ? base_name(g_path) : L"Untitled";
-    StringCchPrintfW(title, MAX_PATH_CHARS + 64, L"%ls%ls%ls - %ls", g_read_only ? L"[RO] " : L"", g_dirty ? L"*" : L"", name, APP_NAME);
+    StringCchPrintfW(title, MAX_PATH_CHARS + 80, L"%ls%ls%ls%ls - %ls", is_dbyte_source_path(g_path) ? L"[DBYTE] " : L"", g_read_only ? L"[RO] " : L"", g_dirty ? L"*" : L"", name, APP_NAME);
     SetWindowTextW(g_main, title);
 }
 
@@ -219,6 +249,114 @@ static int utf8_byte_count(void) {
     return bytes > 0 ? bytes - 1 : 0;
 }
 
+static int ascii_lower(int c) {
+    if (c >= L'A' && c <= L'Z') return c + 32;
+    return c;
+}
+
+static int path_ends_with_i(const WCHAR *path, const WCHAR *suffix) {
+    int lp;
+    int ls;
+    int i;
+
+    if (!path || !suffix) return 0;
+
+    lp = lstrlenW(path);
+    ls = lstrlenW(suffix);
+    if (ls <= 0 || lp < ls) return 0;
+
+    path += lp - ls;
+    for (i = 0; i < ls; i++) {
+        if (ascii_lower(path[i]) != ascii_lower(suffix[i])) return 0;
+    }
+    return 1;
+}
+
+static int is_dbyte_source_path(const WCHAR *path) {
+    const WCHAR *name;
+
+    if (!path || !path[0]) return 0;
+
+    name = base_name(path);
+    if (path_ends_with_i(name, L".dby")) return 1;
+    if (path_ends_with_i(name, L".dbyte")) return 1;
+    if (lstrcmpiW(name, L".dbyterc") == 0) return 1;
+    if (lstrcmpiW(name, L"Dbyte.toml") == 0) return 1;
+    return 0;
+}
+
+static int dbyte_ident_start(WCHAR c) {
+    return (c == L'_') || (c >= L'a' && c <= L'z') || (c >= L'A' && c <= L'Z');
+}
+
+static int dbyte_ident_char(WCHAR c) {
+    return dbyte_ident_start(c) || (c >= L'0' && c <= L'9');
+}
+
+static int dbyte_space(WCHAR c) {
+    return c == L' ' || c == L'\t' || c == L'\r' || c == L'\n' || c == 0x0B || c == 0x0C;
+}
+
+static int dbyte_token_count(void) {
+    WCHAR *text;
+    WCHAR *p;
+    WCHAR quote;
+    int count = 0;
+
+    text = get_text_alloc(GT_USECRLF);
+    if (!text) return 0;
+
+    p = text;
+    while (*p) {
+        while (dbyte_space(*p)) p++;
+        if (!*p) break;
+
+        if (*p == L'#') {
+            while (*p && *p != L'\n') p++;
+            continue;
+        }
+
+        if ((p[0] == L'b' || p[0] == L'B') && (p[1] == L'\'' || p[1] == L'"')) {
+            p++;
+        }
+
+        if (*p == L'\'' || *p == L'"') {
+            quote = *p++;
+            while (*p) {
+                if (*p == L'\\' && p[1]) {
+                    p += 2;
+                    continue;
+                }
+                if (*p == quote) {
+                    p++;
+                    break;
+                }
+                p++;
+            }
+            count++;
+            continue;
+        }
+
+        if (dbyte_ident_start(*p)) {
+            while (dbyte_ident_char(*p)) p++;
+            count++;
+            continue;
+        }
+
+        if (*p >= L'0' && *p <= L'9') {
+            while ((*p >= L'0' && *p <= L'9') || (*p >= L'a' && *p <= L'f') || (*p >= L'A' && *p <= L'F') || *p == L'x' || *p == L'X' || *p == L'_') p++;
+            count++;
+            continue;
+        }
+
+        p++;
+        count++;
+    }
+
+    HeapFree(GetProcessHeap(), 0, text);
+    return count;
+}
+
 static const WCHAR *line_ending_name(void) {
     return L"CRLF on save";
 }
@@ -229,7 +367,7 @@ static void update_status(void) {
     int line;
     int line_start;
     int col;
-    WCHAR text[256];
+    WCHAR text[320];
     LRESULT chars;
     int bytes;
 
@@ -243,12 +381,13 @@ static void update_status(void) {
 
     StringCchPrintfW(
         text,
-        256,
-        L"Ln %d, Col %d    Chars %lld    UTF-8 bytes %d    %ls%ls",
+        320,
+        L"Ln %d, Col %d    Chars %lld    UTF-8 bytes %d    %ls%ls%ls",
         line + 1,
         col + 1,
         (long long)chars,
         bytes,
+        is_dbyte_source_path(g_path) ? L"DBYTE " : L"",
         g_read_only ? L"read-only " : L"",
         g_dirty ? L"modified" : L"saved");
 
@@ -500,7 +639,7 @@ static int choose_open(HWND hwnd, WCHAR *path) {
     ofn.hwndOwner = hwnd;
     ofn.lpstrFile = path;
     ofn.nMaxFile = MAX_PATH_CHARS;
-    ofn.lpstrFilter = L"Text files\0*.txt;*.md;*.c;*.h;*.asm;*.bat\0All files\0*.*\0";
+    ofn.lpstrFilter = L"DByte files\0*.dby;*.dbyte;.dbyterc;Dbyte.toml\0Text files\0*.txt;*.md;*.c;*.h;*.asm;*.bat\0All files\0*.*\0";
     ofn.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 
     return GetOpenFileNameW(&ofn) != 0;
@@ -514,7 +653,7 @@ static int choose_save(HWND hwnd, WCHAR *path) {
     ofn.hwndOwner = hwnd;
     ofn.lpstrFile = path;
     ofn.nMaxFile = MAX_PATH_CHARS;
-    ofn.lpstrFilter = L"Text files\0*.txt\0All files\0*.*\0";
+    ofn.lpstrFilter = L"DByte files\0*.dby;*.dbyte\0Text files\0*.txt\0All files\0*.*\0";
     ofn.Flags = OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
 
     return GetSaveFileNameW(&ofn) != 0;
@@ -669,8 +808,93 @@ static int ask_save_if_dirty(HWND hwnd) {
     return 1;
 }
 
+static int ensure_disk_file_for_dbyte(HWND hwnd) {
+    int answer;
+
+    if (!g_path[0]) {
+        MessageBoxW(hwnd, L"DByte runs source from disk. Save the file first.", APP_NAME, MB_OK | MB_ICONINFORMATION);
+        return save_file_as(hwnd);
+    }
+
+    if (g_dirty) {
+        answer = MessageBoxW(hwnd, L"Save before running DByte?", APP_NAME, MB_YESNOCANCEL | MB_ICONQUESTION);
+        if (answer == IDCANCEL || answer == IDNO) return 0;
+        if (!save_file(hwnd)) return 0;
+    }
+
+    return 1;
+}
+
+static int run_external_command(HWND hwnd, WCHAR *cmdline, const WCHAR *cwd, const WCHAR *caption) {
+    STARTUPINFOW si;
+    PROCESS_INFORMATION pi;
+    DWORD code = 0;
+    WCHAR msg[512];
+
+    ZeroMemory(&si, sizeof(si));
+    ZeroMemory(&pi, sizeof(pi));
+    si.cb = sizeof(si);
+
+    if (!CreateProcessW(NULL, cmdline, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, cwd, &si, &pi)) {
+        show_last_error(hwnd, caption);
+        return 0;
+    }
+
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    GetExitCodeProcess(pi.hProcess, &code);
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
+
+    StringCchPrintfW(msg, 512, L"%ls exited with code %lu.", caption, code);
+    MessageBoxW(hwnd, msg, APP_NAME, code == 0 ? MB_OK | MB_ICONINFORMATION : MB_OK | MB_ICONWARNING);
+    return code == 0;
+}
+
+static void run_dbyte_file(HWND hwnd) {
+    WCHAR cmd[MAX_PATH_CHARS + 64];
+    WCHAR cwd[MAX_PATH_CHARS];
+    int answer;
+
+    if (!ensure_disk_file_for_dbyte(hwnd)) return;
+
+    if (!is_dbyte_source_path(g_path)) {
+        answer = MessageBoxW(hwnd, L"This file does not look like DByte source. Run it anyway?", APP_NAME, MB_YESNO | MB_ICONQUESTION);
+        if (answer != IDYES) return;
+    }
+
+    copy_dir_name(g_path, cwd, MAX_PATH_CHARS);
+    StringCchPrintfW(cmd, MAX_PATH_CHARS + 64, L"dbyte run \"%ls\"", g_path);
+    run_external_command(hwnd, cmd, cwd, L"dbyte run");
+}
+
+static void show_dbyte_version(HWND hwnd) {
+    WCHAR cmd[64];
+    StringCchCopyW(cmd, 64, L"dbyte --version");
+    run_external_command(hwnd, cmd, NULL, L"dbyte --version");
+}
+
+static void show_dbyte_facts(HWND hwnd) {
+    WCHAR text[768];
+    int tokens = dbyte_token_count();
+    int bytes = utf8_byte_count();
+    int lines = (int)SendMessageW(g_edit, EM_GETLINECOUNT, 0, 0);
+
+    StringCchPrintfW(
+        text,
+        768,
+        L"DByte source: %ls\nPath: %ls\nLines: %d\nChars: %lld\nUTF-8 bytes: %d\nApprox tokens: %d\nRun command: dbyte run <file>",
+        is_dbyte_source_path(g_path) ? L"yes" : L"no",
+        g_path[0] ? g_path : L"Untitled buffer",
+        lines,
+        (long long)text_chars(),
+        bytes,
+        tokens);
+
+    MessageBoxW(hwnd, text, L"DByte facts", MB_OK | MB_ICONINFORMATION);
+}
+
 static void show_file_facts(HWND hwnd) {
-    WCHAR text[1200];
+    WCHAR text[1400];
     WCHAR mtime[64];
     SYSTEMTIME utc;
     SYSTEMTIME local;
@@ -679,12 +903,16 @@ static void show_file_facts(HWND hwnd) {
     int lines;
     LRESULT chars;
     int bytes;
+    int dbyte;
+    int tokens;
 
     mtime[0] = 0;
     size.QuadPart = 0;
     lines = (int)SendMessageW(g_edit, EM_GETLINECOUNT, 0, 0);
     chars = text_chars();
     bytes = utf8_byte_count();
+    dbyte = is_dbyte_source_path(g_path);
+    tokens = dbyte ? dbyte_token_count() : 0;
 
     if (g_path[0] && GetFileAttributesExW(g_path, GetFileExInfoStandard, &data)) {
         size.LowPart = data.nFileSizeLow;
@@ -696,8 +924,8 @@ static void show_file_facts(HWND hwnd) {
 
     StringCchPrintfW(
         text,
-        1200,
-        L"Path: %ls\nDisk bytes: %llu\nModified: %ls\nLines: %d\nChars: %lld\nUTF-8 bytes from buffer: %d\nLine endings: %ls\nState: %ls%ls",
+        1400,
+        L"Path: %ls\nDisk bytes: %llu\nModified: %ls\nLines: %d\nChars: %lld\nUTF-8 bytes from buffer: %d\nLine endings: %ls\nDByte source: %ls\nDByte tokens: %d\nState: %ls%ls",
         g_path[0] ? g_path : L"Untitled buffer",
         (unsigned long long)size.QuadPart,
         mtime[0] ? mtime : L"not on disk",
@@ -705,6 +933,8 @@ static void show_file_facts(HWND hwnd) {
         (long long)chars,
         bytes,
         line_ending_name(),
+        dbyte ? L"yes" : L"no",
+        tokens,
         g_read_only ? L"read-only " : L"",
         g_dirty ? L"modified" : L"saved");
 
@@ -857,7 +1087,7 @@ static void replace_all(HWND hwnd) {
 }
 
 static void show_about(HWND hwnd) {
-    MessageBoxW(hwnd, L"DBYTEPAD " APP_VERSION L"\nNative Win32 text editor.\nNo Electron. No webview. No telemetry.", L"About DBYTEPAD", MB_OK | MB_ICONINFORMATION);
+    MessageBoxW(hwnd, L"DBYTEPAD " APP_VERSION L"\nNative Win32 text editor.\nDByte mode calls the external dbyte tool.\nNo Electron. No webview. No telemetry.", L"About DBYTEPAD", MB_OK | MB_ICONINFORMATION);
 }
 
 static HMENU make_menu(void) {
@@ -865,6 +1095,7 @@ static HMENU make_menu(void) {
     HMENU file = CreatePopupMenu();
     HMENU edit = CreatePopupMenu();
     HMENU view = CreatePopupMenu();
+    HMENU tools = CreatePopupMenu();
     HMENU help = CreatePopupMenu();
 
     g_recent_menu = CreatePopupMenu();
@@ -897,11 +1128,16 @@ static HMENU make_menu(void) {
     AppendMenuW(view, MF_STRING, IDM_VIEW_READ_ONLY, L"Read Only");
     AppendMenuW(view, MF_STRING, IDM_VIEW_FONT, L"Font...");
 
+    AppendMenuW(tools, MF_STRING, IDM_TOOLS_DBYTE_RUN, L"Run DByte\tF6");
+    AppendMenuW(tools, MF_STRING, IDM_TOOLS_DBYTE_FACTS, L"DByte Facts");
+    AppendMenuW(tools, MF_STRING, IDM_TOOLS_DBYTE_VERSION, L"DByte Version");
+
     AppendMenuW(help, MF_STRING, IDM_HELP_ABOUT, L"About");
 
     AppendMenuW(menu, MF_POPUP, (UINT_PTR)file, L"File");
     AppendMenuW(menu, MF_POPUP, (UINT_PTR)edit, L"Edit");
     AppendMenuW(menu, MF_POPUP, (UINT_PTR)view, L"View");
+    AppendMenuW(menu, MF_POPUP, (UINT_PTR)tools, L"Tools");
     AppendMenuW(menu, MF_POPUP, (UINT_PTR)help, L"Help");
 
     refresh_recent_menu();
@@ -942,6 +1178,15 @@ static void run_command(HWND hwnd, WORD id) {
         break;
     case IDM_VIEW_FONT:
         choose_font(hwnd);
+        break;
+    case IDM_TOOLS_DBYTE_RUN:
+        run_dbyte_file(hwnd);
+        break;
+    case IDM_TOOLS_DBYTE_FACTS:
+        show_dbyte_facts(hwnd);
+        break;
+    case IDM_TOOLS_DBYTE_VERSION:
+        show_dbyte_version(hwnd);
         break;
     case IDM_HELP_ABOUT:
         show_about(hwnd);
@@ -1072,6 +1317,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE prev, PWSTR cmd, int show) {
         { FVIRTKEY | FCONTROL, 'H', IDM_EDIT_REPLACE },
         { FVIRTKEY, VK_F3, IDM_EDIT_FIND_NEXT },
         { FVIRTKEY, VK_F5, IDM_FILE_RELOAD },
+        { FVIRTKEY, VK_F6, IDM_TOOLS_DBYTE_RUN },
         { FVIRTKEY | FCONTROL, 'Z', IDM_EDIT_UNDO },
         { FVIRTKEY | FCONTROL, 'X', IDM_EDIT_CUT },
         { FVIRTKEY | FCONTROL, 'C', IDM_EDIT_COPY },
