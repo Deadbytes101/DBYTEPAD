@@ -14,6 +14,7 @@
 
 #define IDM_FILE_NEW 1001
 #define IDM_FILE_OPEN 1002
+#define IDM_FILE_OPEN_READ_ONLY 1008
 #define IDM_FILE_SAVE 1003
 #define IDM_FILE_SAVE_AS 1004
 #define IDM_FILE_RELOAD 1005
@@ -27,6 +28,7 @@
 #define IDM_EDIT_FIND 2006
 #define IDM_EDIT_FIND_NEXT 2007
 #define IDM_VIEW_WORD_WRAP 3001
+#define IDM_VIEW_READ_ONLY 3002
 
 static HINSTANCE g_instance;
 static HWND g_main;
@@ -40,11 +42,13 @@ static WCHAR g_path[MAX_PATH_CHARS];
 static int g_dirty;
 static int g_loading;
 static int g_word_wrap = 1;
+static int g_read_only;
 
 static int ask_save_if_dirty(HWND hwnd);
 static int save_file(HWND hwnd);
 static int save_file_as(HWND hwnd);
 static int open_path(HWND hwnd, const WCHAR *path);
+static void set_read_only(int read_only);
 
 static const WCHAR *base_name(const WCHAR *path) {
     const WCHAR *name = path;
@@ -68,7 +72,7 @@ static void show_last_error(HWND hwnd, const WCHAR *what) {
 static void set_title(void) {
     WCHAR title[MAX_PATH_CHARS + 64];
     const WCHAR *name = g_path[0] ? base_name(g_path) : L"Untitled";
-    StringCchPrintfW(title, MAX_PATH_CHARS + 64, L"%ls%ls - %ls", g_dirty ? L"*" : L"", name, APP_NAME);
+    StringCchPrintfW(title, MAX_PATH_CHARS + 64, L"%ls%ls%ls - %ls", g_read_only ? L"[RO] " : L"", g_dirty ? L"*" : L"", name, APP_NAME);
     SetWindowTextW(g_main, title);
 }
 
@@ -130,11 +134,12 @@ static void update_status(void) {
     StringCchPrintfW(
         text,
         256,
-        L"Ln %d, Col %d    Chars %lld    UTF-8 bytes %d    %ls",
+        L"Ln %d, Col %d    Chars %lld    UTF-8 bytes %d    %ls%ls",
         line + 1,
         col + 1,
         (long long)chars,
         bytes,
+        g_read_only ? L"read-only " : L"",
         g_dirty ? L"modified" : L"saved");
 
     SetWindowTextW(g_status, text);
@@ -163,6 +168,21 @@ static void set_edit_format(void) {
 
     SendMessageW(g_edit, EM_SETCHARFORMAT, SCF_DEFAULT, (LPARAM)&cf);
     SendMessageW(g_edit, EM_EXLIMITTEXT, 0, 0x7FFFFFFE);
+}
+
+static void set_read_only(int read_only) {
+    g_read_only = read_only;
+
+    if (g_edit) {
+        SendMessageW(g_edit, EM_SETREADONLY, (WPARAM)(read_only ? TRUE : FALSE), 0);
+    }
+
+    if (g_main) {
+        CheckMenuItem(GetMenu(g_main), IDM_VIEW_READ_ONLY, read_only ? MF_CHECKED : MF_UNCHECKED);
+    }
+
+    set_title();
+    update_status();
 }
 
 static void apply_word_wrap(void) {
@@ -384,6 +404,7 @@ static void new_file(HWND hwnd) {
     SetWindowTextW(g_edit, L"");
     g_loading = 0;
     g_path[0] = 0;
+    set_read_only(0);
     set_dirty(0);
     update_status();
 }
@@ -409,7 +430,15 @@ static void open_file(HWND hwnd) {
     WCHAR path[MAX_PATH_CHARS];
 
     if (choose_open(hwnd, path)) {
-        open_path(hwnd, path);
+        if (open_path(hwnd, path)) set_read_only(0);
+    }
+}
+
+static void open_file_read_only(HWND hwnd) {
+    WCHAR path[MAX_PATH_CHARS];
+
+    if (choose_open(hwnd, path)) {
+        if (open_path(hwnd, path)) set_read_only(1);
     }
 }
 
@@ -436,6 +465,11 @@ static int save_file_as(HWND hwnd) {
 }
 
 static int save_file(HWND hwnd) {
+    if (g_read_only) {
+        MessageBoxW(hwnd, L"Read-only buffer. Disable Read Only before saving.", APP_NAME, MB_OK | MB_ICONINFORMATION);
+        return 0;
+    }
+
     if (!g_path[0]) return save_file_as(hwnd);
     if (!write_text(hwnd, g_path)) return 0;
 
@@ -559,6 +593,7 @@ static HMENU make_menu(void) {
 
     AppendMenuW(file, MF_STRING, IDM_FILE_NEW, L"New\tCtrl+N");
     AppendMenuW(file, MF_STRING, IDM_FILE_OPEN, L"Open...\tCtrl+O");
+    AppendMenuW(file, MF_STRING, IDM_FILE_OPEN_READ_ONLY, L"Open Read Only...");
     AppendMenuW(file, MF_STRING, IDM_FILE_SAVE, L"Save\tCtrl+S");
     AppendMenuW(file, MF_STRING, IDM_FILE_SAVE_AS, L"Save As...\tCtrl+Shift+S");
     AppendMenuW(file, MF_STRING, IDM_FILE_RELOAD, L"Reload");
@@ -578,6 +613,7 @@ static HMENU make_menu(void) {
     AppendMenuW(edit, MF_STRING, IDM_EDIT_SELECT_ALL, L"Select All\tCtrl+A");
 
     AppendMenuW(view, MF_CHECKED | MF_STRING, IDM_VIEW_WORD_WRAP, L"Word Wrap");
+    AppendMenuW(view, MF_STRING, IDM_VIEW_READ_ONLY, L"Read Only");
 
     AppendMenuW(menu, MF_POPUP, (UINT_PTR)file, L"File");
     AppendMenuW(menu, MF_POPUP, (UINT_PTR)edit, L"Edit");
@@ -589,6 +625,7 @@ static void run_command(HWND hwnd, WORD id) {
     switch (id) {
     case IDM_FILE_NEW: new_file(hwnd); break;
     case IDM_FILE_OPEN: open_file(hwnd); break;
+    case IDM_FILE_OPEN_READ_ONLY: open_file_read_only(hwnd); break;
     case IDM_FILE_SAVE: save_file(hwnd); break;
     case IDM_FILE_SAVE_AS: save_file_as(hwnd); break;
     case IDM_FILE_RELOAD: reload_file(hwnd); break;
@@ -606,6 +643,9 @@ static void run_command(HWND hwnd, WORD id) {
         CheckMenuItem(GetMenu(hwnd), IDM_VIEW_WORD_WRAP, g_word_wrap ? MF_CHECKED : MF_UNCHECKED);
         apply_word_wrap();
         resize_parts(hwnd);
+        break;
+    case IDM_VIEW_READ_ONLY:
+        set_read_only(!g_read_only);
         break;
     default: break;
     }
@@ -681,7 +721,7 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
         HDROP drop = (HDROP)wparam;
         WCHAR path[MAX_PATH_CHARS];
         if (DragQueryFileW(drop, 0, path, MAX_PATH_CHARS)) {
-            open_path(hwnd, path);
+            if (open_path(hwnd, path)) set_read_only(0);
         }
         DragFinish(drop);
         return 0;
@@ -797,6 +837,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE prev, PWSTR cmd, int show) {
     if (accel) DestroyAcceleratorTable(accel);
     return (int)msg.wParam;
 }
+
 
 
 
