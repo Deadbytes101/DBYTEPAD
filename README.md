@@ -55,22 +55,21 @@ When a DByte file is open, the title and status bar show `DBYTE`.
 
 DByte mode is optional. DBYTEPAD still opens, edits, and saves DByte source files without DByte installed.
 
-## Docs
-
-Start with [docs](docs/README.md).
-
 ## Release
 
-Current release: v1.2.0
+Current release: v1.2.1
 
 Measured build:
 
-- exe: 184832 bytes
+- commit: c26cb7f
+- exe: 185856 bytes
 - source: 1431 lines
 - source: 42963 bytes
-- sha256: `400214c526514a12ed7181618ba27a5331735f668256729771d329501d94204e`
+- sha256: `e45cfbc8997fedf2f6d248144bde683349b873bebd80db594b43c3a174b5432a`
 
-See [BYTE_LEDGER](docs/BYTE_LEDGER.md).
+## Docs
+
+Start with [docs](docs/README.md).
 
 ## License
 
