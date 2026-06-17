@@ -40,15 +40,20 @@ build\dbytepad.exe README.md
 
 ## DByte mode
 
-The `dbyte-mode` branch adds first-pass DByte integration:
+DBYTEPAD knows DByte source files:
 
-- opens `.dby`, `.dbyte`, `.dbyterc`, and `Dbyte.toml`
-- marks DByte files in the title and status bar
-- counts approximate DByte tokens in Facts
-- `Tools > Run DByte` calls `dbyte run <file>`
-- `Tools > DByte Version` calls `dbyte --version`
+- `.dby`
+- `.dbyte`
+- `.dbyterc`
+- `Dbyte.toml`
 
-DByte mode is optional. Without the DByte command-line tool, DBYTEPAD still opens and edits DByte source files. Run DByte and DByte Version need the DByte tool in PATH.
+When a DByte file is open, the title and status bar show `DBYTE`.
+
+`Tools > DByte Facts` works without the DByte tool installed.
+
+`Tools > Run DByte` and `Tools > DByte Version` use the external DByte command-line tool when it is in PATH.
+
+DByte mode is optional. DBYTEPAD still opens, edits, and saves DByte source files without DByte installed.
 
 ## Docs
 
@@ -56,15 +61,16 @@ Start with [docs](docs/README.md).
 
 ## Release
 
-Current release: v1.1.0
+Current release: v1.2.0
 
 Measured build:
 
-- exe: 180224 bytes
-- source: 1143 lines
-- source: 34383 bytes
+- exe: 184832 bytes
+- source: 1431 lines
+- source: 42963 bytes
+- sha256: `400214c526514a12ed7181618ba27a5331735f668256729771d329501d94204e`
 
-See [BYTE_LEDGER](docs/BYTE_LEDGER.md)
+See [BYTE_LEDGER](docs/BYTE_LEDGER.md).
 
 ## License
 
