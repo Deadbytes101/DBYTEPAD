@@ -1,26 +1,40 @@
 # DBYTEPAD
 
-DBYTEPAD is a small native Windows text editor built directly on Win32.
+A small native Windows text editor built directly on Win32.
 
 No Electron.
 No webview.
 No runtime bundle.
 No telemetry.
 
-The first goal is simple: create a real editor that opens fast, saves files correctly, and keeps the source small enough to understand.
+DBYTEPAD is not trying to become a platform. It is a window, a text buffer, file I/O, and a few tools that earn their place.
 
-## Current scope
+A program should fit in the head.
 
-Version 0.1 starts with a minimal native editor:
+## Version
 
-- Win32 window
-- RichEdit text control
-- New, Open, Save, Save As, Exit
-- Undo, Cut, Copy, Paste, Select All
-- Dirty marker in the title
-- Line and column status
-- Drag and drop file open
-- Single executable build
+Current stable release: v1.0.0
+
+## What it does
+
+- Opens and saves text files.
+- Opens files from the command line.
+- Opens files in read-only mode for inspection.
+- Tracks dirty state in the title and status line.
+- Shows line, column, character count, and UTF-8 byte count.
+- Shows file facts: path, disk size, modified time, lines, chars, buffer bytes, and state.
+- Provides native Find and Find Next.
+- Supports Word Wrap.
+- Supports drag and drop file open.
+- Builds as a single Windows executable.
+
+## What it refuses
+
+- No browser hidden inside the program.
+- No framework pretending to be the operating system.
+- No telemetry.
+- No plugin theater before the editor is solid.
+- No fake cyber skin.
 
 ## Build
 
@@ -30,20 +44,68 @@ Open a Developer Command Prompt for Visual Studio, then run:
 build.bat
 ```
 
-The executable is written to:
+The executable is produced in the build directory as `dbytepad.exe`.
 
-```text
-build\dbytepad.exe
+## Run
+
+```bat
+build\dbytepad.exe README.md
 ```
+
+## Release facts
+
+v1.0.0 local measured build:
+
+- Executable bytes: 140800
+- Source lines: 862
+- Source bytes: 25146
+
+See `docs/BYTE_LEDGER.md` for the measured ledger.
 
 ## Design rules
 
-- Prefer direct Win32 calls over frameworks.
-- Keep the program understandable before making it smaller.
-- Every feature must justify its size and complexity.
-- Do not hide file writes behind clever behavior.
-- Make the first version boringly reliable.
+- Use Win32 directly.
+- Let RichEdit own text mechanics.
+- Let DBYTEPAD own file behavior.
+- Keep file writes explicit.
+- Keep source understandable.
+- Measure size instead of guessing.
+- Preserve stable behavior before shrinking the binary.
 
-## Project state
+## Stable feature set
 
-Early bootstrap. The editor is intentionally small and incomplete.
+File:
+
+- New
+- Open
+- Open Read Only
+- Save
+- Save As
+- Reload
+- Facts
+- Exit
+
+Edit:
+
+- Undo
+- Cut
+- Copy
+- Paste
+- Find
+- Find Next
+- Select All
+
+View:
+
+- Word Wrap
+- Read Only
+
+## Branches
+
+`main` is the stable release line.
+
+Experimental size work belongs on `tiny-build`.
+
+## Status
+
+DBYTEPAD v1.0.0 is tagged and stable. Future work should be bug fixes, release tooling, or isolated tiny-build experiments.
