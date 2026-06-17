@@ -6,6 +6,7 @@
 #include <strsafe.h>
 
 #define APP_NAME L"DBYTEPAD"
+#define APP_VERSION L"1.0.0"
 #define EDIT_CLASS MSFTEDIT_CLASS
 #define MAIN_CLASS L"DBYTEPAD_WINDOW"
 #define MAX_PATH_CHARS 32768
@@ -29,6 +30,7 @@
 #define IDM_EDIT_FIND_NEXT 2007
 #define IDM_VIEW_WORD_WRAP 3001
 #define IDM_VIEW_READ_ONLY 3002
+#define IDM_HELP_ABOUT 4001
 
 static HINSTANCE g_instance;
 static HWND g_main;
@@ -585,11 +587,20 @@ static void show_find(HWND hwnd) {
     g_find_dialog = FindTextW(&g_find);
 }
 
+static void show_about(HWND hwnd) {
+    MessageBoxW(
+        hwnd,
+        L"DBYTEPAD 1.0.0\nNative Win32 text editor.\nNo Electron. No webview. No telemetry.",
+        L"About DBYTEPAD",
+        MB_OK | MB_ICONINFORMATION);
+}
+
 static HMENU make_menu(void) {
     HMENU menu = CreateMenu();
     HMENU file = CreatePopupMenu();
     HMENU edit = CreatePopupMenu();
     HMENU view = CreatePopupMenu();
+    HMENU help = CreatePopupMenu();
 
     AppendMenuW(file, MF_STRING, IDM_FILE_NEW, L"New\tCtrl+N");
     AppendMenuW(file, MF_STRING, IDM_FILE_OPEN, L"Open...\tCtrl+O");
@@ -615,9 +626,12 @@ static HMENU make_menu(void) {
     AppendMenuW(view, MF_CHECKED | MF_STRING, IDM_VIEW_WORD_WRAP, L"Word Wrap");
     AppendMenuW(view, MF_STRING, IDM_VIEW_READ_ONLY, L"Read Only");
 
+    AppendMenuW(help, MF_STRING, IDM_HELP_ABOUT, L"About");
+
     AppendMenuW(menu, MF_POPUP, (UINT_PTR)file, L"File");
     AppendMenuW(menu, MF_POPUP, (UINT_PTR)edit, L"Edit");
     AppendMenuW(menu, MF_POPUP, (UINT_PTR)view, L"View");
+    AppendMenuW(menu, MF_POPUP, (UINT_PTR)help, L"Help");
     return menu;
 }
 
@@ -646,6 +660,9 @@ static void run_command(HWND hwnd, WORD id) {
         break;
     case IDM_VIEW_READ_ONLY:
         set_read_only(!g_read_only);
+        break;
+    case IDM_HELP_ABOUT:
+        show_about(hwnd);
         break;
     default: break;
     }
@@ -837,6 +854,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE prev, PWSTR cmd, int show) {
     if (accel) DestroyAcceleratorTable(accel);
     return (int)msg.wParam;
 }
+
 
 
 

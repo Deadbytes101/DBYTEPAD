@@ -30,3 +30,10 @@ Executable bytes: 140800
 Source lines: 844
 Source bytes: 24621
 Note: local measured build
+
+v1.0.0
+Commit: dfd4dac
+Executable bytes: 140800
+Source lines: 862
+Source bytes: 25146
+Note: local measured build
