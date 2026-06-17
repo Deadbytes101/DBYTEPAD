@@ -109,6 +109,10 @@ View:
 
 Experimental size work belongs on `tiny-build`.
 
+## License
+
+MIT License. See `LICENSE`.
+
 ## Status
 
 DBYTEPAD v1.0.2 is tagged and stable. Future work should be bug fixes, release tooling, or isolated tiny-build experiments.
