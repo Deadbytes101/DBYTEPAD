@@ -14,7 +14,7 @@ Each release entry records the local build facts that matter:
 Run after building:
 
 ```powershell
-.\scripts\size.ps1 -Record v1.1.0
+.\scripts\size.ps1
 ```
 
 ## Entries
@@ -58,3 +58,12 @@ v1.1.0
 - Source lines: 1143
 - Source bytes: 34383
 - Note: recent files, ini state, font setting, replace
+
+v1.2.0
+
+- Measured commit: 624d4a0
+- Executable bytes: 184832
+- Source lines: 1431
+- Source bytes: 42963
+- SHA256: 400214c526514a12ed7181618ba27a5331735f668256729771d329501d94204e
+- Note: optional DByte mode, DByte facts, external DByte runner
