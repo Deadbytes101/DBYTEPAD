@@ -1,37 +1,48 @@
 # DByte Mode
 
-This is the first bridge between DBYTEPAD and the DByte language.
+This is the bridge between DBYTEPAD and the DByte language.
 
-The editor stays an editor. DByte stays the language tool.
+DBYTEPAD stays a text editor.
 
-DBYTEPAD calls the external `dbyte` command. The compiler is not embedded in this branch.
+DByte stays a separate command-line tool.
 
 ## File detection
 
-DByte mode turns on for `.dby`, `.dbyte`, `.dbyterc`, and `Dbyte.toml`.
+DByte mode turns on for:
+
+- `.dby`
+- `.dbyte`
+- `.dbyterc`
+- `Dbyte.toml`
 
 When a DByte file is open, the title and status bar show `DBYTE`.
 
+## Optional tool
+
+DByte mode is optional.
+
+DBYTEPAD can open, edit, save, and count DByte source files even when the DByte tool is not installed.
+
+Run DByte and DByte Version need the DByte tool in PATH.
+
+If the tool is missing, DBYTEPAD says so and keeps the editor usable.
+
 ## Tools menu
 
-`Tools > Run DByte` runs:
+Run DByte runs the saved file from disk.
 
-```text
-dbyte run <file>
-```
+DByte Facts shows path, lines, chars, UTF-8 bytes, DByte tool status, and an approximate token count.
 
-The file must be saved first. DByte runs from disk, not from the editor buffer.
-
-`Tools > DByte Facts` shows path, lines, chars, UTF-8 bytes, and an approximate token count.
-
-`Tools > DByte Version` runs:
-
-```text
-dbyte --version
-```
+DByte Version shows the installed DByte version when available.
 
 ## Current limits
 
-Syntax coloring, output panes, project detection, and embedded runtime work are left for later.
+No syntax coloring yet.
 
-The first rule is simple: open the file, inspect the bytes, run the file.
+No output pane yet.
+
+No project tree yet.
+
+No embedded runtime yet.
+
+The first rule is simple: open the file, inspect the bytes, run the file when the tool exists.
