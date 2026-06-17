@@ -850,6 +850,24 @@ static int run_external_command(HWND hwnd, WCHAR *cmdline, const WCHAR *cwd, con
     return code == 0;
 }
 
+static int start_external_command(HWND hwnd, WCHAR *cmdline, const WCHAR *cwd, const WCHAR *caption) {
+    STARTUPINFOW si;
+    PROCESS_INFORMATION pi;
+
+    ZeroMemory(&si, sizeof(si));
+    ZeroMemory(&pi, sizeof(pi));
+    si.cb = sizeof(si);
+
+    if (!CreateProcessW(NULL, cmdline, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, cwd, &si, &pi)) {
+        show_last_error(hwnd, caption);
+        return 0;
+    }
+
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
+    return 1;
+}
+
 static void run_dbyte_file(HWND hwnd) {
     WCHAR cmd[MAX_PATH_CHARS + 64];
     WCHAR cwd[MAX_PATH_CHARS];
@@ -863,8 +881,8 @@ static void run_dbyte_file(HWND hwnd) {
     }
 
     copy_dir_name(g_path, cwd, MAX_PATH_CHARS);
-    StringCchPrintfW(cmd, MAX_PATH_CHARS + 64, L"dbyte run \"%ls\"", g_path);
-    run_external_command(hwnd, cmd, cwd, L"dbyte run");
+    StringCchPrintfW(cmd, MAX_PATH_CHARS + 64, L"cmd.exe /k dbyte run \"%ls\"", base_name(g_path));
+    start_external_command(hwnd, cmd, cwd, L"dbyte run");
 }
 
 static void show_dbyte_version(HWND hwnd) {
