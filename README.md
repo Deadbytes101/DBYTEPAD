@@ -5,7 +5,7 @@ Small Win32 text editor written in C.
 
 No Electron. No webview. No telemetry.
 
-![DBYTEPAD screenshot](assets/dbytepad-screens.png)
+![DBYTEPAD screenshots](assets/dbytepad-screens.png)
 
 ## Build
 
