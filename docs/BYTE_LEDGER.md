@@ -67,3 +67,11 @@ v1.2.0
 - Source bytes: 42963
 - SHA256: 400214c526514a12ed7181618ba27a5331735f668256729771d329501d94204e
 - Note: optional DByte mode, DByte facts, external DByte runner
+
+v1.2.1
+
+- Measured commit: c26cb7f
+- Executable bytes: 185856
+- Source lines: 1431
+- Source bytes: 42963
+- Note: Windows version metadata for executable Properties
