@@ -1,4 +1,4 @@
-#define WIN32_LEAN_AND_MEAN
+﻿#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <commdlg.h>
 #include <richedit.h>
@@ -15,7 +15,8 @@
 #define IDM_FILE_OPEN 1002
 #define IDM_FILE_SAVE 1003
 #define IDM_FILE_SAVE_AS 1004
-#define IDM_FILE_EXIT 1005
+#define IDM_FILE_RELOAD 1005
+#define IDM_FILE_EXIT 1006
 #define IDM_EDIT_UNDO 2001
 #define IDM_EDIT_CUT 2002
 #define IDM_EDIT_COPY 2003
@@ -35,6 +36,7 @@ static int g_word_wrap = 1;
 static int ask_save_if_dirty(HWND hwnd);
 static int save_file(HWND hwnd);
 static int save_file_as(HWND hwnd);
+static int open_path(HWND hwnd, const WCHAR *path);
 
 static const WCHAR *base_name(const WCHAR *path) {
     const WCHAR *name = path;
@@ -64,6 +66,7 @@ static void set_title(void) {
 
 static void set_dirty(int dirty) {
     g_dirty = dirty;
+    if (g_edit) SendMessageW(g_edit, EM_SETMODIFY, (WPARAM)dirty, 0);
     set_title();
 }
 
@@ -402,6 +405,15 @@ static void open_file(HWND hwnd) {
     }
 }
 
+static void reload_file(HWND hwnd) {
+    WCHAR path[MAX_PATH_CHARS];
+
+    if (!g_path[0]) return;
+
+    StringCchCopyW(path, MAX_PATH_CHARS, g_path);
+    open_path(hwnd, path);
+}
+
 static int save_file_as(HWND hwnd) {
     WCHAR path[MAX_PATH_CHARS];
     StringCchCopyW(path, MAX_PATH_CHARS, g_path);
@@ -445,6 +457,7 @@ static HMENU make_menu(void) {
     AppendMenuW(file, MF_STRING, IDM_FILE_OPEN, L"Open...\tCtrl+O");
     AppendMenuW(file, MF_STRING, IDM_FILE_SAVE, L"Save\tCtrl+S");
     AppendMenuW(file, MF_STRING, IDM_FILE_SAVE_AS, L"Save As...\tCtrl+Shift+S");
+    AppendMenuW(file, MF_STRING, IDM_FILE_RELOAD, L"Reload");
     AppendMenuW(file, MF_SEPARATOR, 0, NULL);
     AppendMenuW(file, MF_STRING, IDM_FILE_EXIT, L"Exit");
 
@@ -470,6 +483,7 @@ static void run_command(HWND hwnd, WORD id) {
     case IDM_FILE_OPEN: open_file(hwnd); break;
     case IDM_FILE_SAVE: save_file(hwnd); break;
     case IDM_FILE_SAVE_AS: save_file_as(hwnd); break;
+    case IDM_FILE_RELOAD: reload_file(hwnd); break;
     case IDM_FILE_EXIT: SendMessageW(hwnd, WM_CLOSE, 0, 0); break;
     case IDM_EDIT_UNDO: SendMessageW(g_edit, EM_UNDO, 0, 0); break;
     case IDM_EDIT_CUT: SendMessageW(g_edit, WM_CUT, 0, 0); break;
@@ -486,9 +500,22 @@ static void run_command(HWND hwnd, WORD id) {
     }
 }
 
+static void open_command_line_file(HWND hwnd) {
+    int argc;
+    LPWSTR *argv;
+
+    argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+    if (!argv) return;
+
+    if (argc > 1) open_path(hwnd, argv[1]);
+    LocalFree(argv);
+}
+
 static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
     switch (msg) {
     case WM_CREATE:
+        g_loading = 1;
+
         g_edit = CreateWindowExW(
             WS_EX_CLIENTEDGE,
             EDIT_CLASS,
@@ -516,6 +543,8 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
         SendMessageW(g_edit, EM_SETEVENTMASK, 0, ENM_CHANGE | ENM_SELCHANGE);
         set_edit_format();
         DragAcceptFiles(hwnd, TRUE);
+
+        g_loading = 0;
         set_dirty(0);
         update_status();
         return 0;
@@ -627,6 +656,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE prev, PWSTR cmd, int show) {
 
     ShowWindow(hwnd, show);
     UpdateWindow(hwnd);
+    open_command_line_file(hwnd);
 
     while (GetMessageW(&msg, NULL, 0, 0) > 0) {
         if (!accel || !TranslateAcceleratorW(hwnd, accel, &msg)) {
@@ -638,3 +668,4 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE prev, PWSTR cmd, int show) {
     if (accel) DestroyAcceleratorTable(accel);
     return (int)msg.wParam;
 }
+
