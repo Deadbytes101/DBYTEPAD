@@ -7,7 +7,7 @@
 #include "resource.h"
 
 #define APP_NAME L"DBYTEPAD"
-#define APP_VERSION L"1.1-dev"
+#define APP_VERSION L"1.1.0"
 #define EDIT_CLASS MSFTEDIT_CLASS
 #define MAIN_CLASS L"DBYTEPAD_WINDOW"
 #define MAX_PATH_CHARS 32768
