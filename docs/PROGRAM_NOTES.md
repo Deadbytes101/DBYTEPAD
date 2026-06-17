@@ -36,10 +36,20 @@ Read-only mode blocks editing and saving.
 
 Facts report what DBYTEPAD knows instead of pretending to know more.
 
-## Stability law
+## Size law
+
+Size is measured, not guessed.
 
 A smaller executable is good only if the editor still works.
 
+The icon resource is part of the program cost.
+
 A clever trick is bad if it makes file behavior harder to reason about.
 
-Version 1.0.0 is the stable line. Experimental work belongs on a branch.
+## Branch law
+
+`main` is the stable line.
+
+Experimental work belongs on another branch.
+
+Version 1.0.2 is the current stable release.
