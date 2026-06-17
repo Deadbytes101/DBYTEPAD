@@ -34,3 +34,10 @@ v1.0.0
 - Source lines: 862
 - Source bytes: 25146
 - Note: local measured build
+
+v1.0.1
+Commit: 75d0639
+Executable bytes: 512000
+Source lines: 864
+Source bytes: 25190
+Note: local measured build
