@@ -1,7 +1,7 @@
 ; DBYTEPAD-1K
 ;
 ; Clean-room tiny Win32 edit surface.
-; Goal: keep this file simple enough to inspect while the build system fights bytes.
+; Goal: beat TinyRetroPad on measured bytes without copying its source.
 ;
 ; Build from an x86 Native Tools Command Prompt:
 ;   tiny\build.bat
@@ -13,37 +13,33 @@
 .model flat, stdcall
 option casemap:none
 
-extrn CreateWindowExA:proc
-extrn DispatchMessageA:proc
-extrn ExitProcess:proc
-extrn GetMessageA:proc
-extrn GetModuleHandleA:proc
-extrn TranslateMessage:proc
+EXTERN _imp__CreateWindowExA@48 :PTR
+EXTERN _imp__DispatchMessageA@4 :PTR
+EXTERN _imp__ExitProcess@4     :PTR
+EXTERN _imp__GetMessageA@16    :PTR
+EXTERN _imp__GetModuleHandleA@4:PTR
+EXTERN _imp__IsWindow@4        :PTR
+EXTERN _imp__TranslateMessage@4:PTR
 
-.data
+.DATA
 editClass db 'EDIT',0
-titleText db 'DBYTEPAD-1K',0
+titleText db 'DB1K',0
 msg dd 7 dup(0)
 
-.code
+.CODE
 start:
-    push 0
-    call GetModuleHandleA
+    xor ebx, ebx
 
-    ; Create a top-level EDIT control. USER32 supplies the edit behavior.
-    ; Style bits:
-    ;   WS_VISIBLE          10000000h
-    ;   WS_OVERLAPPEDWINDOW 00CF0000h
-    ;   WS_VSCROLL          00200000h
-    ;   WS_HSCROLL          00100000h
-    ;   ES_MULTILINE        00000004h
-    ;   ES_AUTOVSCROLL      00000040h
-    ;   ES_AUTOHSCROLL      00000080h
-    ;   ES_WANTRETURN       00001000h
-    push 0
+    push ebx
+    call dword ptr [_imp__GetModuleHandleA@4]
+
+    ; Top-level EDIT control. USER32 supplies the editing surface.
+    ; If the user closes it, the default window proc destroys the window.
+    ; The loop below detects that with IsWindow and exits the process.
+    push ebx
     push eax
-    push 0
-    push 0
+    push ebx
+    push ebx
     push 480
     push 640
     push 80000000h
@@ -51,27 +47,32 @@ start:
     push 10FF10C4h
     push offset titleText
     push offset editClass
-    push 0
-    call CreateWindowExA
+    push ebx
+    call dword ptr [_imp__CreateWindowExA@48]
+    mov esi, eax
 
 message_loop:
-    push 0
-    push 0
-    push 0
+    push ebx
+    push ebx
+    push ebx
     push offset msg
-    call GetMessageA
+    call dword ptr [_imp__GetMessageA@16]
     test eax, eax
     jz exit_process
 
     push offset msg
-    call TranslateMessage
+    call dword ptr [_imp__TranslateMessage@4]
 
     push offset msg
-    call DispatchMessageA
-    jmp message_loop
+    call dword ptr [_imp__DispatchMessageA@4]
+
+    push esi
+    call dword ptr [_imp__IsWindow@4]
+    test eax, eax
+    jnz message_loop
 
 exit_process:
-    push 0
-    call ExitProcess
+    push ebx
+    call dword ptr [_imp__ExitProcess@4]
 
 end start
