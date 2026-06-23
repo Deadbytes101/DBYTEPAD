@@ -14,10 +14,13 @@ Hard target:
 build\dbpad1k.exe <= 1024 bytes
 ```
 
-Current status:
+Current measured result:
 
 ```text
-experimental / unmeasured in repo
+MS LINK baseline: 1296 bytes
+Crinkler build: 454 bytes
+Result: PASS Bronze / Silver / Gold / Black
+Measured locally: 2026-06-23
 ```
 
 The project rule still applies:
@@ -47,6 +50,12 @@ Bronze:  <= 2476 bytes   beats the reported full RetroPad feature build on size
 Silver:  <= 1024 bytes   hits the DBYTEPAD-1K hard budget
 Gold:    <= 981 bytes    beats the reported DTE 2.x bare RICHEDIT base
 Black:   <= 890 bytes    beats the reported DTE 1.x aggressive EDIT base
+```
+
+Measured scoreboard:
+
+```text
+454 bytes: PASS Bronze / Silver / Gold / Black
 ```
 
 A result is not real until `tiny\measure.ps1` reports the checked executable size.
