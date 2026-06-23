@@ -11,6 +11,7 @@ DBYTEPAD is a small Win32 editor. It should be easy to build, easy to read, and 
 - `PROGRAM_NOTES.md` - what the program is allowed to be.
 - `HACKING.md` - how to change the code without turning it into junk.
 - `BYTE_LEDGER.md` - measured size history.
+- `SIZE_LAB.md` - byte and bit leaderboard for tiny native binaries.
 - `../tiny/README.md` - DBYTEPAD-1K byte-budget experiment.
 - `RELEASE_NOTES_v1.2.1.md` - current release notes.
 - `RELEASE_NOTES_v1.2.0.md` - previous DByte mode release notes.
@@ -27,6 +28,8 @@ DByte mode is a bridge. It does not turn DBYTEPAD into a heavy IDE.
 Version metadata belongs in the executable. Users should not see a blank Properties page.
 
 DBYTEPAD-1K is an experimental sibling build, not a replacement for the normal editor.
+
+DBYTEPAD NANO VOID is the insane-size executable tier, not an editor.
 
 ## Rules
 
