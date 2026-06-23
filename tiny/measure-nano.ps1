@@ -4,25 +4,28 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$Path = Join-Path $PSScriptRoot 'dbpadnano.bit'
-if (-not (Test-Path $Path)) {
-    throw 'No DBYTEPAD NANO marker found: tiny\dbpadnano.bit'
+$root = Resolve-Path (Join-Path $PSScriptRoot '..')
+$exe = Join-Path $root 'build\dbpadnano.exe'
+$alias = Join-Path $root 'build\dbpadnano-3632bit.exe'
+$budgetBytes = 512
+$budgetBits = $budgetBytes * 8
+
+if (-not (Test-Path $exe)) {
+    throw 'No DBYTEPAD NANO executable found. Expected build\dbpadnano.exe'
 }
 
-$bytes = [System.IO.File]::ReadAllBytes($Path)
-if ($bytes.Length -ne 1) {
-    throw "DBYTEPAD NANO storage budget failed: $($bytes.Length) bytes > 1 byte"
+$item = Get-Item $exe
+$bits = $item.Length * 8
+$status = if ($item.Length -le $budgetBytes) { 'PASS' } else { 'OVER' }
+
+Write-Host ("DBYTEPAD NANO executable: {0} bytes / {1} bits [{2}]" -f $item.Length, $bits, $status)
+Write-Host ("  TARGET <= {0} bytes / {1} bits" -f $budgetBytes, $budgetBits)
+
+if (Test-Path $alias) {
+    $aliasItem = Get-Item $alias
+    Write-Host ("DBYTEPAD NANO release alias: {0} bytes / {1} bits  {2}" -f $aliasItem.Length, ($aliasItem.Length * 8), $aliasItem.Name)
 }
 
-$semanticBits = if ($bytes[0] -eq [byte][char]'1') { 1 } else { 0 }
-$storageBits = $bytes.Length * 8
-
-Write-Host ("DBYTEPAD NANO semantic payload: {0} bit" -f $semanticBits)
-Write-Host ("DBYTEPAD NANO stored file size: {0} byte / {1} bits" -f $bytes.Length, $storageBits)
-Write-Host ("  PASS  semantic payload <= 1 bit")
-Write-Host ("  PASS  stored marker <= 1 byte")
-Write-Host ("  NOTE  filesystems store bytes; the sub-byte claim is semantic, not physical")
-
-if ($Strict -and $semanticBits -ne 1) {
-    throw 'DBYTEPAD NANO strict semantic payload failed: marker must be ASCII 1'
+if ($Strict -and $item.Length -gt $budgetBytes) {
+    throw "DBYTEPAD NANO strict budget failed: $($item.Length) > $budgetBytes bytes"
 }
