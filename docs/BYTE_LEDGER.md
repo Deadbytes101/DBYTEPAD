@@ -17,6 +17,14 @@ Run after building:
 .\scripts\size.ps1
 ```
 
+For the 1K experiment, run:
+
+```powershell
+cd tiny
+.\build.bat
+.\measure.ps1
+```
+
 ## Entries
 
 v0.1.4
@@ -75,3 +83,13 @@ v1.2.1
 - Source lines: 1431
 - Source bytes: 42963
 - Note: Windows version metadata for executable Properties
+
+DBYTEPAD-1K experiment
+
+- Branch: feat/dbpad-1k
+- Measured locally: 2026-06-23
+- MS LINK baseline: 1296 bytes
+- Crinkler executable: 454 bytes
+- Budget: 1024 bytes
+- Score: PASS Bronze / Silver / Gold / Black
+- Note: clean-room tiny Win32 EDIT surface; beats the recorded TinyRetroPad/DTE size targets used by tiny\measure.ps1
