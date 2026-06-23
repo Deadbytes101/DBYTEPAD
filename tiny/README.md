@@ -28,6 +28,29 @@ measure second
 talk third
 ```
 
+## Victory conditions
+
+TinyRetroPad is the opponent, but DBYTEPAD-1K must stay clean-room.
+
+Known public targets from TinyRetroPad's own notes:
+
+```text
+DTE 1.0 aggressive EDIT build: 890 bytes
+DTE 2.0+ bare RICHEDIT build: 981 bytes
+RetroPad full Notepad-style build: ~2476 to 2686 bytes
+```
+
+DBYTEPAD-1K scoreboard:
+
+```text
+Bronze:  <= 2476 bytes   beats the reported full RetroPad feature build on size
+Silver:  <= 1024 bytes   hits the DBYTEPAD-1K hard budget
+Gold:    <= 981 bytes    beats the reported DTE 2.x bare RICHEDIT base
+Black:   <= 890 bytes    beats the reported DTE 1.x aggressive EDIT base
+```
+
+A result is not real until `tiny\measure.ps1` reports the checked executable size.
+
 ## Clean-room rule
 
 This directory must not copy RetroPad source.
