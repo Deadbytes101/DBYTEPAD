@@ -2,18 +2,20 @@
 
 NANO is the executable tier measured in bits.
 
-It is a real Windows executable released as:
+Current release:
 
 ```text
-dbpadnano-3632bit.exe
+dbpadnano-v0.3.0
+asset: dbpadnano-3368bit.exe
+size: 421 bytes / 3368 bits
 ```
 
-Measured target:
+Behavior:
 
 ```text
-executable size: 454 bytes
-bit size: 3632 bits
-target: <= 512 bytes / <= 4096 bits
+valid Windows executable
+exits immediately
+exit code: 0
 ```
 
 Meaning:
@@ -21,7 +23,7 @@ Meaning:
 ```text
 DBYTEPAD Micro is practical.
 DBYTEPAD-1K is executable byte-kill.
-DBYTEPAD NANO is the same tiny Win32 executable measured and named in bits.
+DBYTEPAD NANO VOID is the insane-size tier below the 454-byte editor core.
 ```
 
 Rule:
