@@ -1,20 +1,19 @@
 # DBYTEPAD NANO
 
-NANO is the joke that still tells the truth.
+NANO is the executable tier measured in bits.
 
-It is not a Windows executable and it is not a text editor.
-
-A normal filesystem stores files in whole bytes. A standalone file cannot be physically smaller than one byte, but the semantic payload in `dbpadnano.bit` is one bit:
+It is a real Windows executable released as:
 
 ```text
-1
+dbpadnano-3632bit.exe
 ```
 
 Measured target:
 
 ```text
-semantic payload: 1 bit
-stored file size: 1 byte
+executable size: 454 bytes
+bit size: 3632 bits
+target: <= 512 bytes / <= 4096 bits
 ```
 
 Meaning:
@@ -22,15 +21,14 @@ Meaning:
 ```text
 DBYTEPAD Micro is practical.
 DBYTEPAD-1K is executable byte-kill.
-DBYTEPAD NANO is the bit below the byte.
+DBYTEPAD NANO is the same tiny Win32 executable measured and named in bits.
 ```
 
 Rule:
 
 ```text
-Do not call this an editor.
-Do not call this an executable.
-It is a measured bit marker for the tiny line.
+GitHub displays asset sizes in bytes.
+The NANO bit identity is shown in the asset name and release notes.
 ```
 
 Build first. Measure second. Talk third.
