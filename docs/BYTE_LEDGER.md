@@ -21,9 +21,9 @@ For tiny builds, run:
 
 ```powershell
 cd tiny
-.\measure-nano.ps1
 .\build.bat
 .\measure.ps1
+.\measure-nano.ps1
 .\build-micro.bat
 .\measure-micro.ps1
 ```
@@ -89,12 +89,13 @@ v1.2.1
 
 DBYTEPAD NANO experiment
 
-- Branch: feat/dbpad-nano
-- Semantic payload: 1 bit
-- Stored marker: 1 byte
-- Marker: tiny\dbpadnano.bit
-- Score: PASS semantic payload <= 1 bit; PASS stored marker <= 1 byte
-- Note: bit-level marker below the byte; not an executable and not an editor
+- Release: dbpadnano-v0.2.0
+- Asset: dbpadnano-3632bit.exe
+- Executable bytes: 454
+- Executable bits: 3632
+- Target: <= 512 bytes / <= 4096 bits
+- SHA256: 853a718866c46e2064284e2647cac70a183a38b5554d9ba6a25bbfda648be3fe
+- Note: real Windows executable; GitHub displays asset size in bytes, so the bit identity is carried in the asset name and release notes
 
 DBYTEPAD-1K experiment
 
