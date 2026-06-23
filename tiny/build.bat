@@ -24,7 +24,7 @@ if errorlevel 1 (
   exit /b 1
 )
 
-ml /nologo /c /coff /Fo"%OBJ%" "%SRC%"
+ml /nologo /c /coff /Cp /Fo"%OBJ%" "%SRC%"
 if errorlevel 1 exit /b 1
 
 link /nologo /nodefaultlib /entry:start /subsystem:windows /opt:ref /opt:icf /merge:.rdata=.text /merge:.data=.text /section:.text,erw /filealign:16 /out:"%LINK_EXE%" "%OBJ%" kernel32.lib user32.lib
@@ -39,7 +39,15 @@ if errorlevel 1 (
   exit /b 0
 )
 
-crinkler /OUT:"%CRINKLER_EXE%" /ENTRY:start /SUBSYSTEM:WINDOWS /COMPMODE:SLOW /ORDERTRIES:4096 "%OBJ%" kernel32.lib user32.lib
+crinkler "%OBJ%" ^
+  /OUT:"%CRINKLER_EXE%" ^
+  /ENTRY:start ^
+  /SUBSYSTEM:WINDOWS ^
+  /NOINITIALIZERS ^
+  /TINYIMPORT ^
+  /COMPMODE:SLOW ^
+  /ORDERTRIES:8192 ^
+  kernel32.lib user32.lib
 if errorlevel 1 exit /b 1
 
 for %%A in ("%CRINKLER_EXE%") do echo Crinkler build: %%~zA bytes  %%~fA
