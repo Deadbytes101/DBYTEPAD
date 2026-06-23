@@ -4,7 +4,9 @@ setlocal
 set ROOT=%~dp0..
 set OUT=%ROOT%\build
 set SRC=%~dp0dbpadmicro.c
-set EXE=%OUT%\dbpadmicro.exe
+set OBJ=%OUT%\dbpadmicro.obj
+set LINK_EXE=%OUT%\dbpadmicro-link.exe
+set PACKED_EXE=%OUT%\dbpadmicro.exe
 
 if not exist "%OUT%" mkdir "%OUT%"
 
@@ -28,7 +30,29 @@ if errorlevel 1 (
 )
 
 :have_tools
-cl /nologo /W4 /WX /O1 /GS- /GR- /TC "%SRC%" /link /nodefaultlib /entry:WinMain /subsystem:windows /opt:ref /opt:icf /merge:.rdata=.text /merge:.data=.text /section:.text,erw /filealign:16 /out:"%EXE%" kernel32.lib user32.lib
+cl /nologo /W4 /WX /O1 /GS- /GR- /TC /c /Fo"%OBJ%" "%SRC%"
 if errorlevel 1 exit /b 1
 
-for %%A in ("%EXE%") do echo DBYTEPAD Micro build: %%~zA bytes  %%~fA
+link /nologo /nodefaultlib /entry:WinMain /subsystem:windows /opt:ref /opt:icf /out:"%LINK_EXE%" "%OBJ%" kernel32.lib user32.lib
+if errorlevel 1 exit /b 1
+
+for %%A in ("%LINK_EXE%") do echo MS LINK Micro build: %%~zA bytes  %%~fA
+
+where crinkler >nul 2>nul
+if errorlevel 1 (
+  echo crinkler.exe not found; skipped Micro packed build.
+  exit /b 0
+)
+
+crinkler "%OBJ%" ^
+  /OUT:"%PACKED_EXE%" ^
+  /ENTRY:WinMain ^
+  /SUBSYSTEM:WINDOWS ^
+  /NOINITIALIZERS ^
+  /TINYIMPORT ^
+  /COMPMODE:SLOW ^
+  /ORDERTRIES:8192 ^
+  kernel32.lib user32.lib
+if errorlevel 1 exit /b 1
+
+for %%A in ("%PACKED_EXE%") do echo Crinkler Micro build: %%~zA bytes  %%~fA
