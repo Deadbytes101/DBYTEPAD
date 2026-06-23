@@ -7,6 +7,17 @@ No Electron. No webview. No telemetry.
 
 ![DBYTEPAD screenshots](assets/dbytepad-screens.png)
 
+## Tiny line
+
+The tiny builds are live in [Releases](https://github.com/Deadbytes101/DBYTEPAD/releases).
+
+| Build | Size | Role |
+| --- | ---: | --- |
+| DBYTEPAD-1K v0.1.0 | 454 B | size-kill Win32 EDIT core |
+| DBYTEPAD Micro v0.1.0 | 1224 B | practical tiny editor: argv open, edit, Ctrl+S save-back |
+
+Build first. Measure second. Talk third.
+
 ## Build
 
 ```bat
