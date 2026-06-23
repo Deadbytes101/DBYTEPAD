@@ -90,10 +90,21 @@ Anything involving common dialogs, recent files, font UI, find/replace, DByte to
 
 Use an x86 Native Tools Command Prompt for Visual Studio.
 
+PowerShell:
+
+```powershell
+cd tiny
+.\build.bat
+```
+
+Command Prompt:
+
 ```bat
 cd tiny
 build.bat
 ```
+
+PowerShell requires `.\` for commands in the current directory.
 
 Outputs:
 
