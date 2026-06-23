@@ -13,7 +13,7 @@ The tiny builds are live in [Releases](https://github.com/Deadbytes101/DBYTEPAD/
 
 | Build | Size | Role |
 | --- | ---: | --- |
-| DBYTEPAD NANO v0.2.0 | 454 B / 3632 bits | real Win32 EXE measured in bits |
+| DBYTEPAD NANO v0.3.0 | 421 B / 3368 bits | VOID executable, exits immediately |
 | DBYTEPAD-1K v0.1.0 | 454 B | size-kill Win32 EDIT core |
 | DBYTEPAD Micro v0.1.0 | 1224 B | practical tiny editor: argv open, edit, Ctrl+S save-back |
 
