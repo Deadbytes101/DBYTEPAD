@@ -11,7 +11,6 @@ BUILD FIRST. MEASURE SECOND. TALK THIRD.
 | Tier | Release | Asset | Bytes | Bits | Behavior |
 | --- | --- | --- | ---: | ---: | --- |
 | NANO VOID | `dbpadnano-v0.3.0` | `dbpadnano-3368bit.exe` | 421 | 3368 | valid Windows executable, exits immediately |
-| NANO EDIT | `dbpadnano-v0.2.0` | `dbpadnano-3632bit.exe` | 454 | 3632 | native Win32 EDIT surface |
 | 1K | `dbpad1k-v0.1.0` | `dbpad1k.exe` | 454 | 3632 | native Win32 EDIT surface |
 | MICRO | `dbpadmicro-v0.1.0` | `dbpadmicro.exe` | 1224 | 9792 | argv open, edit, Ctrl+S save-back |
 | FULL | `v1.2.1` | `dbytepad.exe` | 185856 | 1486848 | full DBYTEPAD editor |
@@ -43,7 +42,7 @@ Do not compare unlike things without naming the tier.
 
 NANO VOID is not an editor.
 
-NANO EDIT and DBYTEPAD-1K are editor-core builds.
+DBYTEPAD-1K owns the 454-byte native Win32 EDIT core slot.
 
 MICRO is the practical tiny editor tier.
 
