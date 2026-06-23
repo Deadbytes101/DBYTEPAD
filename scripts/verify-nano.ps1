@@ -36,7 +36,6 @@ if ($Run) {
 Write-Host ""
 Write-Host "SIZE LAB BOARD"
 Write-BoardLine "NANO VOID" "dbpadnano-v0.3.0" 421 "valid exe, exits immediately"
-Write-BoardLine "NANO EDIT" "dbpadnano-v0.2.0" 454 "native Win32 EDIT surface"
 Write-BoardLine "1K" "dbpad1k-v0.1.0" 454 "native Win32 EDIT core"
 Write-BoardLine "MICRO" "dbpadmicro-v0.1.0" 1224 "open/edit/Ctrl+S save"
 Write-BoardLine "FULL" "v1.2.1" 185856 "full DBYTEPAD editor"
