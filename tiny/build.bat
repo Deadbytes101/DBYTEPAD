@@ -11,16 +11,31 @@ set CRINKLER_EXE=%OUT%\dbpad1k.exe
 if not exist "%OUT%" mkdir "%OUT%"
 
 where ml >nul 2>nul
+if %errorlevel%==0 goto have_tools
+
+set VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe
+if exist "%VSWHERE%" (
+  for /f "usebackq tokens=*" %%i in (`"%VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set VSINSTALL=%%i
+)
+
+if defined VSINSTALL (
+  call "%VSINSTALL%\VC\Auxiliary\Build\vcvarsall.bat" x86
+)
+
+where ml >nul 2>nul
 if errorlevel 1 (
   echo ml.exe was not found.
-  echo Use an x86 Native Tools Command Prompt for Visual Studio.
+  echo Install Visual Studio Build Tools with Desktop development with C++.
+  echo Or run this from an x86 Native Tools Command Prompt for VS.
   exit /b 1
 )
 
+:have_tools
 where link >nul 2>nul
 if errorlevel 1 (
   echo link.exe was not found.
-  echo Use an x86 Native Tools Command Prompt for Visual Studio.
+  echo Install Visual Studio Build Tools with Desktop development with C++.
+  echo Or run this from an x86 Native Tools Command Prompt for VS.
   exit /b 1
 )
 
