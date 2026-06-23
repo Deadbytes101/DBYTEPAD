@@ -17,12 +17,14 @@ Run after building:
 .\scripts\size.ps1
 ```
 
-For the 1K experiment, run:
+For tiny builds, run:
 
 ```powershell
 cd tiny
 .\build.bat
 .\measure.ps1
+.\build-micro.bat
+.\measure-micro.ps1
 ```
 
 ## Entries
@@ -93,3 +95,14 @@ DBYTEPAD-1K experiment
 - Budget: 1024 bytes
 - Score: PASS Bronze / Silver / Gold / Black
 - Note: clean-room tiny Win32 EDIT surface; beats the recorded TinyRetroPad/DTE size targets used by tiny\measure.ps1
+
+DBYTEPAD Micro experiment
+
+- Branch: feat/dbpad-micro
+- Measured locally: 2026-06-23
+- MS LINK baseline: 4608 bytes
+- Crinkler executable: 1224 bytes
+- Budget: 2476 bytes
+- Score: PASS RetroPad full-size target
+- Behavior proof: argv file open; native multiline EDIT surface; Ctrl+S save-back to original path; dirty marker in title
+- Note: practical TinyRetroPad fight tier; DBYTEPAD-1K remains the 454-byte size-kill core
