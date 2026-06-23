@@ -106,6 +106,12 @@ static void save_back(void) {
     GlobalFree(buf);
 }
 
+static void check_save_hotkey(void) {
+    if ((GetAsyncKeyState(VK_CONTROL) & 0x8000) && (GetAsyncKeyState('S') & 1)) {
+        save_back();
+    }
+}
+
 static void parse_first_arg(void) {
     char *cmd = GetCommandLineA();
     char *out = g_path;
@@ -157,13 +163,6 @@ static LRESULT CALLBACK wnd_proc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         }
         return 0;
 
-    case WM_KEYDOWN:
-        if (wp == 'S' && (GetKeyState(VK_CONTROL) & 0x8000)) {
-            save_back();
-            return 0;
-        }
-        break;
-
     case WM_CLOSE:
         DestroyWindow(hwnd);
         return 0;
@@ -185,11 +184,16 @@ int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show) {
 
     parse_first_arg();
 
-    ZeroMemory(&wc, sizeof(wc));
+    wc.style = 0;
     wc.lpfnWndProc = wnd_proc;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
     wc.hInstance = inst;
-    wc.lpszClassName = "DBMICROCLS";
+    wc.hIcon = 0;
     wc.hCursor = LoadCursorA(0, IDC_IBEAM);
+    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wc.lpszMenuName = 0;
+    wc.lpszClassName = "DBMICROCLS";
     RegisterClassA(&wc);
 
     g_main = CreateWindowExA(0, "DBMICROCLS", "DBMICRO", WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 800, 600, 0, 0, inst, 0);
@@ -198,6 +202,7 @@ int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show) {
     while (GetMessageA(&msg, 0, 0, 0) > 0) {
         TranslateMessage(&msg);
         DispatchMessageA(&msg);
+        check_save_hotkey();
     }
 
     return 0;
