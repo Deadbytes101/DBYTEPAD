@@ -87,15 +87,16 @@ v1.2.1
 - Source bytes: 42963
 - Note: Windows version metadata for executable Properties
 
-DBYTEPAD NANO experiment
+DBYTEPAD NANO VOID experiment
 
-- Release: dbpadnano-v0.2.0
-- Asset: dbpadnano-3632bit.exe
-- Executable bytes: 454
-- Executable bits: 3632
-- Target: <= 512 bytes / <= 4096 bits
-- SHA256: 853a718866c46e2064284e2647cac70a183a38b5554d9ba6a25bbfda648be3fe
-- Note: real Windows executable; GitHub displays asset size in bytes, so the bit identity is carried in the asset name and release notes
+- Release: dbpadnano-v0.3.0
+- Asset: dbpadnano-3368bit.exe
+- Executable bytes: 421
+- Executable bits: 3368
+- Target: smaller than 454 bytes / 3632 bits
+- SHA256: 6593e303e551dd23afff4403736ed99255e6f2cd7c481c24daacc6856e0c4e83
+- Behavior proof: valid Windows executable; exits immediately; exit code 0
+- Note: insane-size tier; not an editor and not a UI build
 
 DBYTEPAD-1K experiment
 
