@@ -21,6 +21,7 @@ For tiny builds, run:
 
 ```powershell
 cd tiny
+.\measure-nano.ps1
 .\build.bat
 .\measure.ps1
 .\build-micro.bat
@@ -85,6 +86,15 @@ v1.2.1
 - Source lines: 1431
 - Source bytes: 42963
 - Note: Windows version metadata for executable Properties
+
+DBYTEPAD NANO experiment
+
+- Branch: feat/dbpad-nano
+- Semantic payload: 1 bit
+- Stored marker: 1 byte
+- Marker: tiny\dbpadnano.bit
+- Score: PASS semantic payload <= 1 bit; PASS stored marker <= 1 byte
+- Note: bit-level marker below the byte; not an executable and not an editor
 
 DBYTEPAD-1K experiment
 
