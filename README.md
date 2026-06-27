@@ -52,6 +52,35 @@ build\dbytepad.exe README.md
 - Line, column, char count, and UTF-8 byte count.
 - Remembers window size, font, word wrap, and recent files in `dbytepad.ini`.
 
+## Architecture pipeline
+
+```mermaid
+flowchart TD
+    A[User / command line / drag-drop] --> B[wWinMain]
+    B --> C[Win32 main window]
+    C --> D[Menu + accelerators + messages]
+    D --> E[RichEdit text buffer]
+
+    F[Disk file] --> G[read_text]
+    G --> H[decode: UTF-8 / UTF-16LE / ANSI fallback]
+    H --> E
+
+    E --> I[status + facts]
+    I --> J[line / column / chars / UTF-8 bytes]
+
+    E --> K[save_file]
+    K --> L[encode UTF-8 + CRLF]
+    L --> F
+
+    E --> M[DByte mode detector]
+    M --> N[title/status DBYTE marker]
+    M --> O[DByte Facts]
+    M --> P{dbyte.exe in PATH?}
+    P -- yes --> Q[Run DByte / DByte Version]
+    Q --> R[external dbyte tool]
+    P -- no --> S[editor still works]
+```
+
 ## DByte mode
 
 DBYTEPAD knows DByte source files:
